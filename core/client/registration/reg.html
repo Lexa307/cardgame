@@ -1,5 +1,6 @@
 <html>
   <head>
+    <title>War of imperium/Registration </title>
       <link href='https://fonts.googleapis.com/css?family=Open+Sans:700,600' rel='stylesheet' type='text/css'>
       <style>
         body{
@@ -75,6 +76,7 @@ h1{
 
 #btn2{
   float:left;
+  align-self: "center";
   background:#3498db;
   width:125px;  padding-top:5px;
   padding-bottom:5px;
@@ -84,7 +86,7 @@ h1{
   
   margin-top:20px;
   margin-bottom:20px;
-  margin-left:10px;
+  margin-left:30%;
   font-weight:800;
   font-size:0.8em;
 }
@@ -92,6 +94,15 @@ h1{
 #btn2:hover{ 
 background:#3594D2; 
 }
+.alert {
+  padding: 15px;
+  border: 1px solid #0a0304;
+  border-radius: 4px;
+  color: #0a0304;
+  background-color: #cc334d;
+}
+
+
       </style>
   </head>
   <body>
@@ -99,39 +110,28 @@ background:#3594D2;
           <div class="box">
           <h1>Dashboard</h1>
           
-          <input type="email" name="email" value="email" onFocus="field_focus(this, 'email');" onblur="field_blur(this, 'email');" class="email" />
+          <input type="email" id = 'mail' name="email" value="email"  class="email" />
             
-          <input type="password" name="email" value="email" onFocus="field_focus(this, 'email');" onblur="field_blur(this, 'email');" class="email" />
+          <input id="pass1" type="password" name="email" value="email"   class="email" />
+
+          <input id="pass2" type="password" name="email" value="email"  class="email" />
             
-          <a href="#" id='login_btn'><div class="btn">Sign In</div></a> <!-- End Btn -->
+         
           
-          <a href="registration/reg.html"id='reg_btn'><div id="btn2">Sign Up</div></a> <!-- End Btn2 -->
+          <a href="#"id='reg_btn'><div id="btn2">Sign Up</div></a> <!-- End Btn2 -->
             
           </div> <!-- End Box -->
             
           </form>
           
-          <p>Forgot your password? <u style="color:#f1c40f;">Click Here!</u></p>
+          
+          
             
           
           <script src="js/lib/socket.io.js"></script>
+          <script src="js/lib/TweenMax.min.js"></script>
+          <script src="js/reg.js"></script>
           
-          <script  src="js/lib/three.js"></script>
-          <script src="js/lib/WebGL.js"></script>
-          <script  src="js/lib/GLTFLoader.js"> </script>
-          <script  src="js/lib/DRACOLoader.js"> </script>
-          <script  src="js/lib/OrbitControls.js"></script>
-          <script src="js/lib/RGBELoader.js" ></script>
-          <script  src="js/lib/stats.min.js"></script>
-          <script src="js/lib/EquirectangularToCubeGenerator.js"></script>
-    	    <script src="js/lib/TweenMax.min.js"></script>
-    	    <script type="text/javascript" src="js/lib/dat.gui.min.js"></script>
-
-    	  
-          
-
-         <script src="js/main.js"></script> 
-         <script src="js/auth.js"></script>
   </body>
 </html>
 

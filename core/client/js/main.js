@@ -178,22 +178,21 @@ class Slider{
   
   
 }
-let a,socket;
-socket = io();
-socket.on('rotate', function(msg){
-  TweenMax.to(a.plane.rotation,1,{y:a.plane.rotation.y+1,ease: Power2.easeInOut});
+let a;
+// socket.on('rotate', function(msg){
+//   TweenMax.to(a.plane.rotation,1,{y:a.plane.rotation.y+1,ease: Power2.easeInOut});
  
-});
-if ( THREE.WEBGL.isWebGLAvailable() ) {
-  //var canvas = document.createElement( 'canvas' );
-	// Initiate function or other initializations here
-   a = new Slider(/*canvas*/);
+// });
+// if ( THREE.WEBGL.isWebGLAvailable() ) {
+//   //var canvas = document.createElement( 'canvas' );
+// 	// Initiate function or other initializations here
+//    a = new Slider(/*canvas*/);
 
 
-} else {
+// } else {
 
-	var warning = THREE.WEBGL.getWebGLErrorMessage();
-	document.getElementById( 'container' ).appendChild( warning );
+// 	var warning = THREE.WEBGL.getWebGLErrorMessage();
+// 	document.getElementById( 'container' ).appendChild( warning );
 
-}
+// }
 
