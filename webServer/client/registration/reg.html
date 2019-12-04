@@ -106,19 +106,20 @@ background:#3594D2;
       </style>
   </head>
   <body>
-      <form method="post" action="index.html">
+      <form action="http://127.0.0.1:3000/" method="post">
           <div class="box">
           <h1>Dashboard</h1>
-          
+          <input type="email" id = 'nickname' name="nickname" value="Lexa307"  class="email" />
+
           <input type="email" id = 'mail' name="email" value="email"  class="email" />
             
-          <input id="pass1" type="password" name="email" value="email"   class="email" />
+          <input id="pass1" type="password" name="pass1" value="email"   class="email" />
 
-          <input id="pass2" type="password" name="email" value="email"  class="email" />
+          <input id="pass2" type="password" name="pass2" value="email"  class="email" />
             
          
           
-          <a href="#"id='reg_btn'><div id="btn2">Sign Up</div></a> <!-- End Btn2 -->
+          <a href="#"id='reg_btn'><input id="btn2" value = "Sign Up"></a> <!-- End Btn2 -->
             
           </div> <!-- End Box -->
             
@@ -128,7 +129,7 @@ background:#3594D2;
           
             
           
-          <script src="js/lib/socket.io.js"></script>
+         
           <script src="js/lib/TweenMax.min.js"></script>
           <script src="js/reg.js"></script>
           

@@ -9,7 +9,10 @@
   "author": "Lexa307",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
+    "express-rate-limit": "^5.0.0",
+    "mysql": "^2.17.1",
     "socket.io": "^2.3.0",
     "validate.it.js": "^0.1.3"
   }
