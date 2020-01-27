@@ -54,10 +54,13 @@ app.get('/', function(req, res){
         
         lobby.push(msg)
         let pos = lobby.length-1;
+        console.log(`pos of ${msg} : ${pos}`);
         io.emit("respond",{msg:"ok", status:"connected",data:rotationState});
+        console.log(lobby);
         console.log(`${msg} has been connected` );
         socket.on('disconnect', function(){
           lobby.splice(pos,1)
+          console.log(lobby);
           console.log(`${msg} has been disconnected`);
         });
         socket.on('cardClick', function(msg){

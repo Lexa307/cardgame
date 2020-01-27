@@ -22,8 +22,9 @@ socket.on('respond', function(msg){
     if ( THREE.WEBGL.isWebGLAvailable() ) {
       document.getElementById("form").parentNode.removeChild(document.getElementById("form"));//delete form
       a = new Slider(msg.data);
+      socket.off('respond');
     } else {
-      socket.emit("disconnect","")
+      
      var warning = THREE.WEBGL.getWebGLErrorMessage();
      document.body.appendChild( warning );
    
@@ -32,7 +33,7 @@ socket.on('respond', function(msg){
    
 
   }else{
-    alert(msg);
+    alert(msg.msg);
   }
  
 });
