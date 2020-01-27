@@ -4,7 +4,16 @@ function bind(func, context) {
     return func.apply(context, arguments);
   };
 }
+const nick = document.getElementById("name");
 
+function connect(){
+  socket.emit("connect",nick.nodeValue)
+
+}
+socket.on('apply', function(msg){
+  TweenMax.to(a.plane.rotation,1,{y:a.plane.rotation.y+1,ease: Power2.easeInOut});
+ 
+});
 
 
 
