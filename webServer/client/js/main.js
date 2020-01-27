@@ -4,14 +4,36 @@ function bind(func, context) {
     return func.apply(context, arguments);
   };
 }
+let a;//slider obj
+let socket = io();
 const nick = document.getElementById("name");
+const connect_btn = document.getElementById("connect_btn");
+connect_btn.addEventListener("click",()=>{
+  
+  socket.emit("join",nick.value)
+  console.log(nick.value);
 
-function connect(){
-  socket.emit("connect",nick.nodeValue)
 
-}
-socket.on('apply', function(msg){
-  TweenMax.to(a.plane.rotation,1,{y:a.plane.rotation.y+1,ease: Power2.easeInOut});
+
+},false);
+
+socket.on('respond', function(msg){
+  if(msg.msg=="ok"){
+    if ( THREE.WEBGL.isWebGLAvailable() ) {
+      document.getElementById("form").parentNode.removeChild(document.getElementById("form"));//delete form
+      a = new Slider(msg.data);
+    } else {
+      socket.emit("disconnect","")
+     var warning = THREE.WEBGL.getWebGLErrorMessage();
+     document.body.appendChild( warning );
+   
+   }
+   
+   
+
+  }else{
+    alert(msg);
+  }
  
 });
 
@@ -19,22 +41,14 @@ socket.on('apply', function(msg){
 
 
 class Slider{
-  constructor(selector){
+  constructor(state){
 
     this.scene = new THREE.Scene();
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
-      this.renderer = selector ? (()=>{ return new THREE.WebGLRenderer( { canvas: selector, context: selector.getContext( 'webgl', { alpha: false,antialias:false } ) } );})()  : new THREE.WebGLRenderer()
-      this.camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 0.1, 60000 );
-      this.mobile = true;
-    }else{
-      this.mobile = false;
-      this.renderer = selector ? (()=>{ return new THREE.WebGLRenderer( { canvas: selector, context: selector.getContext( 'webgl', { alpha: false,antialias:true } ) } );})()  : new THREE.WebGLRenderer({antialias:true})
-      this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 60000 );
-    }
-
+    this.renderer =  new THREE.WebGLRenderer({antialias:true})
+    this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 60000 );
     this.renderer.setPixelRatio( window.devicePixelRatio );
     this.renderer.setSize( window.innerWidth, window.innerHeight );
-    
+    this.initRotation = state;
     this.scene.background = new THREE.Color(0x161616);
     this.loadRes();
    
@@ -87,6 +101,7 @@ class Slider{
         let material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
         this.plane = new THREE.Mesh( geometry, material );
         this.plane.name = 'card';
+        this.plane.rotation.set(this.initRotation.x,this.initRotation.y,this.initRotation.z)
         
         this.Init();
       },this),
@@ -159,7 +174,7 @@ class Slider{
 
 	  if(intersects.length>0){
       if(intersects[ 0 ].object.name == 'card'){
-        socket.emit('cardClick', 'true');
+        socket.emit('cardClick', 1);
 
       }
     }
@@ -187,21 +202,9 @@ class Slider{
   
   
 }
-let a;
-// socket.on('rotate', function(msg){
-//   TweenMax.to(a.plane.rotation,1,{y:a.plane.rotation.y+1,ease: Power2.easeInOut});
+
+socket.on('rotate', function(msg){
+  TweenMax.to(a.plane.rotation,1,{y:a.plane.rotation.y+msg,ease: Power2.easeInOut});
  
-// });
-// if ( THREE.WEBGL.isWebGLAvailable() ) {
-//   //var canvas = document.createElement( 'canvas' );
-// 	// Initiate function or other initializations here
-//    a = new Slider(/*canvas*/);
-
-
-// } else {
-
-// 	var warning = THREE.WEBGL.getWebGLErrorMessage();
-// 	document.getElementById( 'container' ).appendChild( warning );
-
-// }
+});
 

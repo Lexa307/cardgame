@@ -95,23 +95,18 @@ background:#3594D2;
       </style>
   </head>
   <body>
-      <form method="post" action="index.html">
+      <form method="post" action="index.html" id = "form">
           <div class="box">
           <h1>War of emperium 0.0.0.2 </h1>
           
-          <input type="email" id = "name" name="email" value="email" onFocus="field_focus(this, 'email');" onblur="field_blur(this, 'email');" class="email" />
-            
-          <!-- <input type="password" name="email" value="email" onFocus="field_focus(this, 'email');" onblur="field_blur(this, 'email');" class="email" /> -->
-            
-          <a href="#" id='login_btn'><div class="btn">Connect</div></a> <!-- End Btn -->
-          
-          <!-- <a href="registration/reg.html"id='reg_btn'><div id="btn2">Sign Up</div></a> End Btn2 -->
-            
+          <input type="email" id = "name" name="email" value="your nick name"   class="email" />
+          <a href="#" id='connect_btn'><div class="btn">Connect to test lobby</div></a> <!-- End Btn -->
+  
           </div> <!-- End Box -->
             
           </form>
           
-          <!-- <p>Forgot your password? <u style="color:#f1c40f;">Click Here!</u></p> -->
+      
             
           
           <script src="js/lib/socket.io.js"></script>
