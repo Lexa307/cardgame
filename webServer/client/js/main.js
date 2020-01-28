@@ -20,7 +20,7 @@ connect_btn.addEventListener("click",()=>{
 socket.on('respond', function(msg){
   if(msg.msg=="ok"){
     if ( THREE.WEBGL.isWebGLAvailable() ) {
-      document.getElementById("form").parentNode.removeChild(document.getElementById("form"));//delete form
+      document.getElementById("menu").parentNode.removeChild(document.getElementById("menu"));//delete form
       a = new Slider(msg.data);
       socket.off('respond');
     } else {

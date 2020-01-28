@@ -1,110 +1,53 @@
 <html>
   <head>
-      <link href='https://fonts.googleapis.com/css?family=Open+Sans:700,600' rel='stylesheet' type='text/css'>
+      <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:700,600' rel='stylesheet' type='text/css'> -->
       <style>
-        body{
-  font-family: 'Open Sans', sans-serif;
-  background:#423e59;
-  margin: 0 auto 0 auto;  
-  width:100%; 
-  text-align:center;
-  margin: 20px 0px 20px 0px;   
-}
-
-p{
-  font-size:12px;
-  text-decoration: none;
-  color:#ffffff;
-}
-
-h1{
-  font-size:1.5em;
-  color:#b8b3ba;
-}
-
-.box{
-  background:#423e59;
-  width:300px;
-  border-radius:6px;
-  margin: 0 auto 0 auto;
-  padding:0px 0px 70px 0px;
-  border: #2980b9 4px solid; 
-}
-
-.email{
-  background:#ecf0f1;
-  border: #ccc 1px solid;
-  border-bottom: #ccc 2px solid;
-  padding: 8px;
-  width:250px;
-  color:#AAAAAA;
-  margin-top:10px;
-  font-size:1em;
-  border-radius:4px;
-}
-
-.password{
-  border-radius:4px;
-  background:#ecf0f1;
-  border: #ccc 1px solid;
-  padding: 8px;
-  width:250px;
-  font-size:1em;
-}
-
-.btn{
-  background:#2ecc71;
-  width:90%;
-  padding-top:5px;
-  padding-bottom:5px;
-  color:white;
-  border-radius:4px;
-  border: #27ae60 1px solid;
-  
-  margin-top:20px;
-  margin-bottom:20px;
-  float:left;
-  margin-left:16px;
-  font-weight:800;
-  font-size:0.8em;
-}
-
-.btn:hover{
-  background:#2CC06B; 
-}
-
-#btn2{
-  float:left;
-  background:#3498db;
-  width:125px;  padding-top:5px;
-  padding-bottom:5px;
-  color:white;
-  border-radius:4px;
-  border: #2980b9 1px solid;
-  
-  margin-top:20px;
-  margin-bottom:20px;
-  margin-left:10px;
-  font-weight:800;
-  font-size:0.8em;
-}
-
-#btn2:hover{ 
-background:#3594D2; 
-}
+          body, html{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        height: 100%;
+        width: 100%;
+        margin: 0 0 0 0;
+        padding: 0 0 0 0;
+        overflow: hidden;
+        
+      }
+       	button,input {
+			font-family:Mistral, Florence, Helvetica, cursive; 
+			font-size:2.5em; 
+			text-align:center; 
+			width:90%; 
+			color:#000000; 
+			text-shadow: -1px -1px 6px #aaaaaa;
+		}
+     
       </style>
   </head>
-  <body>
-      <form method="post" action="index.html" id = "form">
-          <div class="box">
-          <h1>War of emperium 0.0.0.2 </h1>
-          
-          <input type="email" id = "name" name="email" value="your nick name"   class="email" />
-          <a href="#" id='connect_btn'><div class="btn">Connect to test lobby</div></a> <!-- End Btn -->
-  
-          </div> <!-- End Box -->
-            
-          </form>
+  <body style="margin:0px; background-image: url(images/bg.png); background-repeat: no-repeat; background-size: cover">
+
+    <div style="background-color:#00000066; color:black; padding:20px; margin:25%; margin-top:5%; margin-bottom:10%" align="center" width="40%" id = "menu" >
+	
+      <img src="images/logo.png" width="50%" height="20%" style="padding:10px">
+      </br>
+      </br>
+      <div id = "main_block">
+        <button id="play">Играть</button>
+        </br>
+        <button id="deck">Колода</button>
+        </br>
+        <button id="settings">Настройки</button>
+        </br>
+        <button id="exit">Выход</button>
+      </div>
+      <form id = "form" style="visibility: hidden">
+        <input type="email" id = "name" name="email" value="your nick name"   class="email" />
+        <button id='connect_btn'>Connect to test lobby</button> <!-- End Btn -->
+    </form>
+    <p align="center" style="color:#00000099; font-size:0.9em; font-variant: small-caps">Инженеры</br>2020г.</p>
+    </div>
+    
+
           
       
             
@@ -116,15 +59,10 @@ background:#3594D2;
           <script  src="js/lib/GLTFLoader.js"> </script>
           <script  src="js/lib/DRACOLoader.js"> </script>
           <script  src="js/lib/OrbitControls.js"></script>
-          <script src="js/lib/RGBELoader.js" ></script>
           <script  src="js/lib/stats.min.js"></script>
-          <script src="js/lib/EquirectangularToCubeGenerator.js"></script>
     	    <script src="js/lib/TweenMax.min.js"></script>
     	    <script type="text/javascript" src="js/lib/dat.gui.min.js"></script>
-
-    	  
-          
-
+         <script src="js/menu.js"></script>
          <script src="js/main.js"></script> 
          <!-- <script src="js/auth.js"></script> -->
   </body>
