@@ -1,71 +1,26 @@
-<html>
-  <head>
-      <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:700,600' rel='stylesheet' type='text/css'> -->
-      <style>
-          body, html{
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        height: 100%;
-        width: 100%;
-        margin: 0 0 0 0;
-        padding: 0 0 0 0;
-        overflow: hidden;
-        
-      }
-       	button,input {
-			font-family:Mistral, Florence, Helvetica, cursive; 
-			font-size:2.5em; 
-			text-align:center; 
-			width:90%; 
-			color:#000000; 
-			text-shadow: -1px -1px 6px #aaaaaa;
-		}
-     
-      </style>
-  </head>
-  <body style="margin:0px; background-image: url(images/bg.png); background-repeat: no-repeat; background-size: cover">
-
-    <div style="background-color:#00000066; color:black; padding:20px; margin:25%; margin-top:5%; margin-bottom:10%" align="center" width="40%" id = "menu" >
-	
-      <img src="images/logo.png" width="50%" height="20%" style="padding:10px">
-      </br>
-      </br>
-      <div id = "main_block">
-        <button id="play">Играть</button>
-        </br>
-        <button id="deck">Колода</button>
-        </br>
-        <button id="settings">Настройки</button>
-        </br>
-        <button id="exit">Выход</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>War of emperium</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div class="wrapper">
+    <a href="/" class="wrapper__logo">
+      <img src="./images/k7ozrenxcaor15moci3g17mp 1.png" alt="" class="logo__img">
+    </a>
+    <div class="wrapper__pagename">Log In</div>
+    <div class="wrapper__form">
+      <div class="form__login">
+        <label for="logininput">Login</label>
+        <div class="login__input">
+          <input type="email" class="login" id="logininput">
+        </div>
       </div>
-      <form id = "form" style="visibility: hidden">
-        <input type="email" id = "name" name="email" value="your nick name"   class="email" />
-        <button id='connect_btn'>Connect to test lobby</button> <!-- End Btn -->
-    </form>
-    <p align="center" style="color:#00000099; font-size:0.9em; font-variant: small-caps">Инженеры</br>2020г.</p>
     </div>
-    
-
-          
-      
-            
-          
-          <script src="js/lib/socket.io.js"></script>
-          
-          <script  src="js/lib/three.js"></script>
-          <script src="js/lib/WebGL.js"></script>
-          <script  src="js/lib/GLTFLoader.js"> </script>
-          <script  src="js/lib/DRACOLoader.js"> </script>
-          <script  src="js/lib/OrbitControls.js"></script>
-          <script  src="js/lib/stats.min.js"></script>
-    	    <script src="js/lib/TweenMax.min.js"></script>
-    	    <script type="text/javascript" src="js/lib/dat.gui.min.js"></script>
-         <script src="js/menu.js"></script>
-         <script src="js/main.js"></script> 
-         <!-- <script src="js/auth.js"></script> -->
-  </body>
+  </div>
+</body>
 </html>
-
-
