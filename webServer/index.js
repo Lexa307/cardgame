@@ -51,7 +51,9 @@ app.post('/auth', function(request, response) {
 
 app.get('/home', function(request, response) {
 	if (request.session.loggedin) {
-		response.send('Welcome back, ' + request.session.username + '!');
+    //response.send('Welcome back, ' + request.session.username + '!');
+    //response.sendFile(path.join(__dirname + '/client/home/home.html'));
+    console.log(path.join(__dirname + '/client/home/home.html'))
 	} else {
 		response.send('Please login to view this page!');
 	}
