@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="./css/style.css">
+		<title>Login </title>
+		
+	</head>
+	<body>
+    <div class="wrapper">
+		  <div class="login-form">
+			  <h1>Login</h1>
+			  <form action="auth" method="POST">
+          <label for="username">Login</label>
+          <input type="text" name="username" required id = "username">
+          <label for="password">Password</label>
+		  <input type="password" name="password" required id = "password">
+		  <input type="checkbox" value="remember" id="check">
+		  <label for="check">Remember me</label>
+		  <input type="submit" value="Log in">
+        </form>
+        <a href="register.html">
+          <input type="submit" value="Register">
+        </a>
+      </div>
+    </div>
+	</body>
+</html>
