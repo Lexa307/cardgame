@@ -16,6 +16,19 @@
          url('../fonts/roboto-v20-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
          url('../fonts/roboto-v20-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   }
+	/* milonga-regular - latin */
+@font-face {
+	  font-family: 'Milonga';
+	  font-style: normal;
+	  font-weight: 400;
+	  src: url('../fonts/milonga-v7-latin-regular.eot'); /* IE9 Compat Modes */
+	  src: local('Milonga'), local('Milonga-Regular'),
+		   url('../fonts/milonga-v7-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+		   url('../fonts/milonga-v7-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+		   url('../fonts/milonga-v7-latin-regular.woff') format('woff'), /* Modern Browsers */
+		   url('../fonts/milonga-v7-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+		   url('../fonts/milonga-v7-latin-regular.svg#Milonga') format('svg'); /* Legacy iOS */
+	}
 html{
     box-sizing: border-box;
 }
@@ -26,6 +39,7 @@ body{
     background: url("../images/floating-castle-ragnarok-online-anime-games-clouds-scenic-valley\ 1.png") no-repeat;
     background-size: cover;
     padding-top: 1%;
+	background-position: center;
   }
   .wrapper{
 width: 529px;
@@ -42,11 +56,21 @@ margin: 0 auto;
     font-size: 28px;
     line-height: 33px;
 }
+	.title h1 {
+        text-align: center;
+        color: #FFFF00;
+        font-family: 'Milonga';
+        font-style: normal;
+        font-weight: normal;
+        font-size: 60px;
+        line-height: 56px;
+        padding: 35px 0 0 0;
+    }
 
     .login-form {
         width: 442px;
         margin: 0 auto;
-        padding-bottom: 254px;
+        padding-bottom: 245px;
     }
 
     .login-form h1 {
@@ -57,7 +81,7 @@ margin: 0 auto;
         font-weight: normal;
         font-size: 50px;
         line-height: 56px;
-        padding: 20px 0 20px 0;
+        padding: 0 0 10px 0;
     }
     .login-form input[type="password"],
     .login-form input[type="text"] {
