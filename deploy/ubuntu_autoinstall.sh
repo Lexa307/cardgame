@@ -1,0 +1,12 @@
+sudo apt install nodejs;
+sudo apt install mysql-server;
+mysql_secure_installation;
+sudo apt install git;
+git clone --single-branch --branch test https://github.com/Lexa307/cardgame;
+cd cardgame;
+npm install;
+cd BD;
+mysql -u root -p1234 <init.sql;
+cd -;
+cd webServer;
+node index.js;
