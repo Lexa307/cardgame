@@ -5,7 +5,7 @@ sudo apt install git;
 git clone --single-branch --branch test https://github.com/Lexa307/cardgame;
 cd cardgame;
 npm install;
-cd BD;
+cd DB;
 mysql -u root -p1234 <init.sql;
 cd -;
 cd webServer;
