@@ -3,7 +3,7 @@ var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var path = require('path');
-const bcypt = require('bcrypt');
+const argon2 = require('argon2');
 const saltRounds = 8;
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -18,6 +18,8 @@ var connection = mysql.createConnection({
 });
 
 var app = express();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 app.use(session({
 	secret: 'secret',
 	resave: true,
@@ -38,16 +40,25 @@ app.post('/auth', function(request, response) {
 
 			connection.query(`SELECT password FROM accounts WHERE email = '${mail}';` , (err,results)=> {
 				if (results.length > 0) {
-					console.log(results[0].password);
-					bcypt.compare(password,results[0].password,(err,result)=>{
-						if(result){
-							request.session.loggedin = true;
-							request.session.mail = mail;
-							response.redirect('/home');
-						} else {
-							response.send('Incorrect Username and/or Password!');
-						}	
-					})
+					try {
+						argon2.verify(results[0].password, password).then(answer =>{
+							if(answer){
+								console.log(answer);
+								request.session.loggedin = true;
+								request.session.mail = mail;
+								response.redirect('/home');
+							} else {
+								// password did not match
+								response.send('Incorrect Username and/or Password!');
+							  }
+						}) 
+							
+						 
+					  } catch (err) {
+						// internal failure
+						response.send('server error!');
+					  }
+
 					
 				} else {
 					response.send('Incorrect Username and/or Password!');
@@ -85,17 +96,20 @@ app.post('/reg', function(request, response) {
 					response.send('This nickname already used');
 					response.end();
 				} else {
-					bcypt.genSalt(saltRounds,(err,salt)=>{
-						bcypt.hash(request.body.password,salt,(err,hash)=>{
-							console.log(hash);
+
+					
+						argon2.hash(request.body.password).then(hash =>{
 							connection.query(`INSERT INTO accounts (username, password, email) VALUES ('${nickname}', '${hash}', '${mail}');`,(err,results)=>{
-								
 								request.session.loggedin = true;
 								request.session.mail = mail;
 								response.redirect('/home');
-							})
-						})
-					})
+								})
+						});
+
+						
+
+					  
+
 				}
 			
 			}
@@ -103,4 +117,13 @@ app.post('/reg', function(request, response) {
 	})
 });
 
-app.listen(3000);
+
+
+io.on('connection', function(socket){
+    console.log('a user connected');
+    socket.on('disconnect', function(){
+      console.log('user disconnected');
+    });
+});
+
+http.listen(3000);

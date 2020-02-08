@@ -9,7 +9,7 @@
   "author": "Lexa307",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^3.0.7",
+    "argon2": "^0.25.1",
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "express-rate-limit": "^5.0.0",
