@@ -19,14 +19,19 @@
     <div class="wrapper">
 		  <div class="login-form">
 			  <form action="auth" method="POST">
-				<input type="submit" value="Search game">
+				<input type="submit" value="Search game" id = 'SearhButton'>
        		  </form>
         
       </div>
 	</div>
 	<script src="../js/lib/socket.io.js"></script>
 		<script>
-  			var socket = io();
+			  var socket = io();
+			  const Sbtn = document.getElementById('SearchButton');
+			  Sbtn.addEventListener('click',findGame(),false);
+			  function findGame () {
+				socket.emit('searching', 'username');
+			  }
 		</script>
 	</body>
 </html>
