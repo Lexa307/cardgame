@@ -132,7 +132,7 @@ io.on('connection', function(socket){
 					break;
 				}
 			}
-			searching.splice(i,1);
+			searching.splice(pos,1);
 			socket.searching = false;
 		}
       console.log('user disconnected');
