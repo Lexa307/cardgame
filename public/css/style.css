@@ -39,7 +39,6 @@ body{
     background: url("../images/floating-castle-ragnarok-online-anime-games-clouds-scenic-valley\ 1.png") no-repeat;
     background-size: cover;
     padding-top: 1%;
-	background-position: center;
   }
   .wrapper{
 width: 529px;
@@ -48,6 +47,26 @@ background: rgba(4, 4, 4, 0.61);
 border-radius: 40px;
 margin: 0 auto;
 }
+.notfound{
+    
+    width: 40%;
+    height: 60%;
+    background: rgba(4, 4, 4, 0.61);
+    margin: 0 auto;
+    min-height: 50%;
+    align-items: center;
+    vertical-align: middle;
+    color: #FFFFFF;
+    padding-left: 0;
+}
+.notfound h1{
+    text-align: center;
+
+}
+.notfound h3{
+    text-align: center;
+}
+
 .wrapper input[type="submit"]{
      margin-top: 38px;
     font-family: Roboto;

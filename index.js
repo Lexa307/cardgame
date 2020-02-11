@@ -1,41 +1,37 @@
-var mysql = require('mysql');
-var express = require('express');
-var session = require('express-session');
-var bodyParser = require('body-parser');
-var path = require('path');
+const express = require('express');
+const session = require('express-session');
+const app = express();
+const bodyParser = require('body-parser');
+const path = require('path');
 const argon2 = require('argon2');
-const rooms = [];
-const rateLimit = require('express-rate-limit');
-const searching =  [];
-const limiter = rateLimit({
-  windowMs:60*1000,
-  max:10
-});
-var connection = mysql.createConnection({
+const mysql = require('mysql');
+const connection = mysql.createConnection({
 	host     : 'localhost',
 	user     : 'root',
 	password : '1234',
 	database : 'carddb'
 });
-
-var app = express();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
 app.use(session({
 	secret: 'secret',
-	resave: true,
-	saveUninitialized: true
+	resave: false,
+    saveUninitialized: true,
+   
 }));
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
-app.use(express.static('client'));
-app.use(limiter);
+
+
+app.use(express.static('./public/'));
+app.use(require('./routes'));
+
+
+
 app.get('/', function(request, response) {
-	response.sendFile(path.join(__dirname + '/client/login.html'));
+	response.redirect(`/auth`);
 });
 
-app.post('/auth', function(request, response) {
-	var mail = request.body.mail;
+app.post('/auth',function(request,response){
+    var mail = request.body.mail;
 	var password = request.body.password;
 	if (mail && password) {
 
@@ -44,9 +40,9 @@ app.post('/auth', function(request, response) {
 					try {
 						argon2.verify(results[0].password, password).then(answer =>{
 							if(answer){
-								console.log(answer);
+								
 								request.session.loggedin = true;
-								request.session.mail = mail;
+                                request.session.mail = mail;
 								response.redirect('/home');
 							} else {
 								// password did not match
@@ -71,17 +67,6 @@ app.post('/auth', function(request, response) {
 		response.send('Please enter Username and Password!');
 		response.end();
 	}
-});
-
-app.get('/home', function(request, response) {
-	if (request.session.loggedin) {
-    //response.send('Welcome back, ' + request.session.username + '!');
-    //response.sendFile(path.join(__dirname + '/client/home/home.html'));
-    console.log(path.join(__dirname + '/client/home/home.html'));
-	} else {
-		response.send('Please login to view this page!');
-	}
-	response.end();
 });
 
 app.post('/reg', function(request, response) {
@@ -118,7 +103,14 @@ app.post('/reg', function(request, response) {
 	});
 });
 
+app.use((req,res,next) => {
+    res.status(404).sendFile(path.join(__dirname + '/public/404.html'));
+});
 
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const searching =  [];
+const rooms = [];
 
 io.on('connection', function(socket){
 	console.log('a user connected');
@@ -139,11 +131,14 @@ io.on('connection', function(socket){
 	});
 	socket.on('searching', function(msg){
 		socket.searching = true;
-		searching.push(socket);
+        searching.push(socket);
+        console.log(searching);
 		
-		console.log(this);
 	});
 });
+console.reset = function () {
+    return process.stdout.write('\033c');
+  }
 function searchingHandle(){
 	let timerId = setInterval(()=>{
 		if(searching.length >= 2){
@@ -156,7 +151,9 @@ function searchingHandle(){
 			}
 			io.to(`room ${rooms.length}`).emit('startGame');
 
-		}
+        }
+       // console.reset();
+        
 	},100);
 }
 searchingHandle();
