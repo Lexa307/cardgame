@@ -4,7 +4,7 @@
   "description": "test sockets",
   "main": "core/index.js",
   "scripts": {
-    "test": "jshint webServer/index.js"
+    "test": "jshint index.js"
   },
   "author": "Lexa307",
   "license": "ISC",

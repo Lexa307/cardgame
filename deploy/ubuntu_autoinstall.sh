@@ -8,5 +8,4 @@ npm install;
 cd DB;
 mysql -u root -p1234 <init.sql;
 cd -;
-cd webServer;
 node index.js;
