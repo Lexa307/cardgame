@@ -41,11 +41,13 @@ body{
     padding-top: 1%;
   }
   .wrapper{
-width: 529px;
-height: 90%;
+max-width: 529px;
 background: rgba(4, 4, 4, 0.61);
 border-radius: 40px;
 margin: 0 auto;
+display: flex;
+flex-direction: column;
+max-height: 850px;
 }
 .notfound{
     
@@ -87,9 +89,10 @@ margin: 0 auto;
     }
 
     .login-form {
-        width: 442px;
+        max-width: 442px;
+        max-height: 700px;
         margin: 0 auto;
-        padding-bottom: 245px;
+        padding-bottom: 30%;
     }
 
     .login-form h1 {
@@ -132,4 +135,26 @@ margin: 0 auto;
         font-weight: normal;
         font-size: 24px;
         line-height: 28px;
+    }
+    @media (max-width:1200px){
+        .wrapper{
+            max-width: 429px;
+            height: 60%;
+        }
+        .login-form {
+            max-width: 342px;
+            max-height: 600px;
+        }
+    }
+    .err{
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 24px;
+        line-height: 28px;
+        visibility: hidden;
+        -webkit-text-stroke-width: 0.5px;
+        -webkit-text-stroke-color: #000;
+        color: rgba(255, 0, 0, 1);
+        max-width: 431px;
     }
