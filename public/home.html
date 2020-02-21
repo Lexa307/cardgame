@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+
+		<link rel="stylesheet" href="css/style.css">
+		<title>Login </title>
+		<style>
+			.login-form {
+		width: 90%;
+		height: 90%;
+        margin: 0 auto;
+    }
+		</style>
+	</head>
+	
+	<body>
+    <div class="wrapper">
+		  <div class="login-form">
+			  
+				<input type="submit" value="Search game" id = "SearhButton" >
+       		 
+        
+      </div>
+	</div>
+	<script src="js/lib/socket.io.js"></script>
+		<script>
+			  var socket = io();
+			  let Sbtn = document.getElementById("SearhButton");
+			  Sbtn.addEventListener('click',findGame,false);
+			  function findGame () {
+				socket.emit('searching', 'username');
+			  }
+		</script>
+	</body>
+</html>
