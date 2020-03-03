@@ -5,7 +5,6 @@
   "main": "core/index.js",
   "scripts": {
     "test": "jshint index.js"
-	"testscript": "sh deploy/ubuntu_autoinstall.sh"
   },
   "author": "Lexa307",
   "license": "ISC",
