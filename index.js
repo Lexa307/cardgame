@@ -138,7 +138,7 @@ io.on('connection', function(socket){
 });
 console.reset = function () {
     return process.stdout.write('\033c');
-  }
+  };
 function searchingHandle(){
 	let timerId = setInterval(()=>{
 		if(searching.length >= 2){
