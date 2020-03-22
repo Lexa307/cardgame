@@ -61,5 +61,7 @@ CREATE TABLE IF NOT EXISTS `deck` (
 CREATE INDEX users_id ON deck (user_id);
 
 
+insert into ranks (`rank_name`,`condition`)values('bronze',50);
+
 
 

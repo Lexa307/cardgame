@@ -85,7 +85,7 @@ app.post('/reg', function(request, response) {
 
 					
 						argon2.hash(request.body.password).then(hash =>{
-							connection.query(`INSERT INTO accounts (username, password, email) VALUES ('${nickname}', '${hash}', '${mail}');`,(err,results)=>{
+							connection.query(`INSERT INTO accounts (username, password, email, gold,rank_points,matches, matches_win) VALUES ('${nickname}', '${hash}', '${mail}', '0','0','0','0');`,(err,results)=>{
 								request.session.loggedin = true;
 								request.session.mail = mail;
 								response.redirect('/home');
