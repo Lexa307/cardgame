@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `deck` (
  REFERENCES `carddb`.`card` (`card_id`) ON DELETE SET NULL
 
 )ENGINE = InnoDB CHARSET=utf8;
-CREATE INDEX users_id ON deck (user_id);
+CREATE INDEX fk_users_id ON deck (user_id);
 
 
 insert into ranks (`rank_name`,`condition`)values('bronze',50);
