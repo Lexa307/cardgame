@@ -2,18 +2,41 @@ const express = require('express');
 const session = require('express-session');
 const app = express();
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const argon2 = require('argon2');
 const mysql = require('mysql');
-const connection = mysql.createConnection({
-	host     : 'localhost',
-	user     : 'root',
-	password : '1234',
-	database : 'carddb'
-});
+
+var options = {
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: '1234',
+    database: 'carddb'
+};
+
+const connection = mysql.createConnection(options);
+var MySQLStore = require('express-mysql-session')(session);
+
+ 
+var sessionStore = new MySQLStore({
+    expiration: 10800000,
+    createDatabaseTable: true,
+    schema: {
+        tableName: 'USERS_SESSIONS',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data'
+        }
+    }
+}, connection);
+app.use(cookieParser());
 app.use(session({
+	key: 'session_cookie_name',
 	secret: 'secret',
 	resave: false,
+	store: sessionStore,
     saveUninitialized: true,
    
 }));
