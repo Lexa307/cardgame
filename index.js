@@ -43,7 +43,7 @@ var sessionMiddleware = session({
 	store: sessionStore,
     saveUninitialized: true,
    
-})
+});
 io.use(function(socket, next) {
     sessionMiddleware(socket.request, socket.request.res, next);
 });
@@ -143,7 +143,7 @@ app.use((req,res,next) => {
 io.on('connection', function(socket){
 	console.log('a user connected');
 	socket.searching = false;
-	console.log(socket.request.session)
+	console.log(socket.request.session);
 	// var cookie_string = socket.request.headers.cookie;
 	// if( cookieParser.JSONCookies(cookie_string).indexOf('session_cookie_name=s%3A')!=-1){
 	// 	let connect_sid = cookieParser.JSONCookies(cookie_string).split(';')[1].replace('session_cookie_name=s%3A','').split('.')[0].replace(' ','');
