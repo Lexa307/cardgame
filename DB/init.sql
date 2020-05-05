@@ -30,6 +30,13 @@ CREATE TABLE IF NOT EXISTS `packs` (
   PRIMARY KEY (`pack_id`))
 ENGINE = InnoDB CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `logic` (
+`id` INT ,
+`name` VARCHAR(45) ,
+`description` VARCHAR(255)
+)ENGINE = InnoDB CHARSET=utf8;
+CREATE INDEX fk_logic_id ON logic (id);
+
 CREATE TABLE IF NOT EXISTS `card` (
   `card_id` INT NOT NULL AUTO_INCREMENT,
   `hp_pull` INT NOT NULL,
@@ -43,10 +50,15 @@ CREATE TABLE IF NOT EXISTS `card` (
   `logic_id` INT, -- механика способности
   `res_path` VARCHAR(255) NOT NULL, -- текстура в рукаве/колоде
   `card_type` VARCHAR(45) NOT NULL,
+  CONSTRAINT pack_id_fk 
      FOREIGN KEY (`pack_id`)
  REFERENCES `carddb`.`packs` (`pack_id`) ON DELETE SET NULL,
+ CONSTRAINT logic_id_fk 
+  FOREIGN KEY (`logic_id`)
+ REFERENCES `carddb`.`logic` (`id`) ON DELETE SET NULL,
   PRIMARY KEY (`card_id`))
 ENGINE = InnoDB CHARSET=utf8;
+
 
 CREATE TABLE IF NOT EXISTS `deck` (
 `user_id` INT ,
@@ -61,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `deck` (
 CREATE INDEX fk_users_id ON deck (user_id);
 
 
+
 insert into ranks (`rank_name`,`condition`)values('bronze',50);
 INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ('test1', '$argon2i$v=19$m=4096,t=3,p=1$MMHe80nfoBAetzqBPuzoTg$0BwZjl7onDLFwBzTWcqXBUTG5szpldvQUkb8hwLnLxI', 'test1@test.ru', 5000, 0, 1, 0, 0);
 INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ( 'test2', '$argon2i$v=19$m=4096,t=3,p=1$MMHe80nfoBAetzqBPuzoTg$0BwZjl7onDLFwBzTWcqXBUTG5szpldvQUkb8hwLnLxI', 'test2@test.ru', 5000, 0, 1, 0, 0);
@@ -73,6 +86,7 @@ INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank
 INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ( 'test9', '$argon2i$v=19$m=4096,t=3,p=1$MMHe80nfoBAetzqBPuzoTg$0BwZjl7onDLFwBzTWcqXBUTG5szpldvQUkb8hwLnLxI', 'test9@test.ru', 5000, 0, 1, 0, 0);
 INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ( 'test10', '$argon2i$v=19$m=4096,t=3,p=1$MMHe80nfoBAetzqBPuzoTg$0BwZjl7onDLFwBzTWcqXBUTG5szpldvQUkb8hwLnLxI', 'test10@test.ru', 5000, 0, 1, 0, 0);
 INSERT INTO `carddb`.`packs` (`pack_id`, `cost`, `name`, `pack_description`) VALUES (1, 0, 'StarterPuck', 'based pack for new players');
+INSERT INTO `carddb`.`logic` (`id`, `name`, `description`) VALUES (0, 'test', 'for developer');
 INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,65, 'Норна', 'богиня судьбы, показывает какие карты подготовил  для вас противник.', 100, 1, 0, 'public/res/card1', 'skill');
 INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (5, 0, 7,20, 'Эйнхерии', 'Один из сильнейших павших воинов. ', 100, 1, 0, 'public/res/card2', 'default');
 INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (10, 0, 13,9, 'Валькирия ', 'Дочь славного война. ', 100, 1, 0, 'public/res/card3', 'default');
@@ -172,4 +186,5 @@ insert into carddb.deck(user_id,card_id,pos) values (10,4,4);
 insert into carddb.deck(user_id,card_id,pos) values (10,3,3);
 insert into carddb.deck(user_id,card_id,pos) values (10,2,2);
 insert into carddb.deck(user_id,card_id,pos) values (10,1,1);
+
 
