@@ -159,10 +159,12 @@ app.use((req,res,next) => {
     res.status(404).sendFile(path.join(__dirname + '/public/404.html'));
 });
 
+
+
 function cancelSearching(socket){
 	if (socket.searching){ //если пользователь внезапно закроет вкладку при поиске
 		let pos = -1;
-		for(let i = 0 ; i < searching.length-1; i++){
+		for(let i = 0 ; i < searching.length; i++){
 			if(searching[i].id == socket.id){
 				pos = i;
 				break;
@@ -173,6 +175,20 @@ function cancelSearching(socket){
 	}
 }
 
+function endGame(socket){
+	if(socket.inGame){
+
+		for(let i = 0; i < rooms.length; i++){
+			if(rooms[i].roomName == Object.keys(socket.adapter.rooms)[1]){
+				rooms[i].endGame(socket);
+				console.log(rooms.length);
+				rooms.splice(i,1);
+				console.log(rooms.length);
+			}
+		}
+	}
+}
+
 io.on('connection', (socket)=>{
 	console.log('a user connected');
 	socket.searching = false;
@@ -180,7 +196,9 @@ io.on('connection', (socket)=>{
 	socket.userId = socket.request.session.playerId;
 		
     socket.on('disconnect', ()=>{
-		cancelSearching(socket);	
+		cancelSearching(socket);
+		endGame(socket);
+
       console.log('user disconnected');
 	});
 
@@ -191,6 +209,7 @@ io.on('connection', (socket)=>{
 	
 
 	socket.on('searching', function(msg){
+		if(socket.inGame||socket.searching){return;}
 		socket.searching = true;
         searching.push(socket);
 	});

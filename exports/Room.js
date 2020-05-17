@@ -21,7 +21,8 @@ class Room{
         this.socket1.join(roomName);
         this.socket2.join(roomName);
 
-        this.socket1.searching = this.socket2 = false;
+        this.socket1.inGame = this.socket2.inGame = true;
+        this.socket1.searching = this.socket2.searching = false;
 
         this.loadRes();
 
@@ -40,6 +41,13 @@ class Room{
     }
     startGame(){
 
+    }
+    endGame(socket){//send looser
+        this.io.to(this.roomName).emit('closeGame')
+        this.socket1.leave(this.roomName);
+        this.socket2.leave(this.roomName);
+        
+        this.socket1.inGame = this.socket2.inGame = false;
     }
 }
 module.exports = Room;

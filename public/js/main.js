@@ -23,7 +23,17 @@ class Game{
         this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize( window.innerWidth, (window.innerHeight) );//(window.innerWidth/1.77)
         document.body.appendChild( this.renderer.domElement );
-        
+        this.requestId = undefined;
+        socket.on('closeGame',bind((msg)=>{
+          window.cancelAnimationFrame(this.requestId);
+          this.renderer.domElement.remove();
+          document.getElementById('wrapper').style.display = 'block';
+          socket.off('closeGame');
+          document.getElementById('serchPanel').innerHTML = `<h1>Поиск игроков...</h1>
+          <input type="submit" value="Отмена" id = "cancel" >`;
+          removeGame();
+
+        },this))
         this.loadRes();
     }
 
@@ -36,7 +46,7 @@ class Game{
     }
 
     animate () {
-        requestAnimationFrame( this.animate.bind(this) );
+        this.requestId = requestAnimationFrame( this.animate.bind(this) );
         this.renderer.render( this.scene, this.camera );
         this.raycaster.setFromCamera( this.mouse, this.camera );
         var intersects = this.raycaster.intersectObjects( this.scene.children );
@@ -54,7 +64,8 @@ class Game{
     }
    
     loadRes(){
-      document.body.style.backgroundImage = "none";
+      // this.bgImage = document.body.style.backgroundImage;
+      // document.body.style.backgroundImage = "none";
       document.getElementById('wrapper').style.display = 'none';
       document.getElementById('serchPanel').style.display = 'none';
         this.mouse = new THREE.Vector2(0,0);
@@ -63,21 +74,19 @@ class Game{
         this.scene.add( ambientLight );
         this.light = new THREE.PointLight();
         this.scene.add(this.light);
-        var loader = new THREE.GLTFLoader().setPath( 'res/' );
+        var loader = new THREE.GLTFLoader().setPath( 'models/' );
             loader.load( 'field/field.glb', bind( function ( gltf ) {
                 this.scene.add( gltf.scene );
                 this.fscene = gltf.scene;
                 this.camera.position.set(23,55,26);
                 this.light.position.set(10,70,26);
-                loader.load('card/colod_card_def.glb',bind(function(gltf){
-                  this.colodCard = gltf.scene;
-                  loader.load('card/field_card_def.glb',bind(function(gltf){
-                    this.fieldCard = gltf.scene;
-                    this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
-                    this.controls.target = new THREE.Vector3(-10,  20,  26);
-                    this.controls.update();  
-                    this.animate();  
-                  },this))
+                loader.load('card/card_models.glb',bind(function(gltf){
+                  this.colodCard = gltf.scene.children[0];
+                  this.fieldCard = gltf.scene.children[1];
+                  this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+                  this.controls.target = new THREE.Vector3(-10,  20,  26);
+                  this.controls.update();  
+                  this.animate();  
                 },this))
                 
             },this)
@@ -110,4 +119,7 @@ function bind(func, context) {
 	return function() {
 	  return func.apply(context, arguments);
 	};
+}
+function removeGame(){
+  delete a;
 }
