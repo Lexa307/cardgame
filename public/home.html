@@ -6,40 +6,78 @@
 		<link rel="stylesheet" href="css/style.css">
 		<title>Login </title>
 		<style>
-			  body, html {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        height: 100%;
-        width: 100%;
-        margin: 0 0 0 0;
-        padding: 0 0 0 0;
+		body, html {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			height: 100%;
+			width: 100%;
+			margin: 0 0 0 0;
+			padding: 0 0 0 0;
         }
-			.login-form {
-		width: 90%;
-		height: 90%;
-        margin: 0 auto;
-    }
+		.login-form {
+			width: 90%;
+			height: 90%;
+			margin: 0 auto;
+		}
+		.searcher{
+			position: relative;
+			max-width: 30vw;
+			background: rgba(4, 4, 4, 0.61);
+			border-radius: 40px;
+			margin: 0 auto;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			max-height: 40vh;
+			height: 30vh;
+			display: none;
+		}
+		.searcher input[type="submit"]{
+			margin-top: 1vh;
+			font-family: Roboto;
+			font-style: normal;
+			font-weight: normal;
+			font-size: 28px;
+			line-height: 33px;
+			margin: 0 auto;
+			display: flex;
+		}
+		.searcher h1 {
+			text-align: center;
+			color: #FFFFFF;
+			font-family: Fenix;
+			font-style: normal;
+			font-weight: normal;
+			font-size: 50px;
+			line-height: 56px;
+        /* padding: 0 0 0 0; */
+    	}
 
 		</style>
 	</head>
 	
 	<body>
     <div class="wrapper" id = "wrapper" >
+		<div class="title">
+			<h1>War Of Imperium</h1>
+		  </div>
 		  <div class="login-form">
-			  
-				<input type="submit" value="Search game" id = "SearhButton" >
-       		 
-        
+			<h1>Меню</h1>			  
+			<input type="submit" value="Поиск игры" id = "SearhButton" >
+			<input type="submit" value="Колода" id = "colod" >
+			<input type="submit" value="Наборы" id = "packs" >
+			<input type="submit" value="Выйти из системы" id = "exit" >  
       </div>
+	</div>
+	<div class="searcher" id = "serchPanel">
+		<h1>Поиск игроков...</h1>
+		<input type="submit" value="Отмена" id = "cancel" >
 	</div>
 	<script src="js/lib/socket.io.js"></script>
 	<script src="js/lib/three.min.js"></script>
 	<script src="js/lib/GLTFLoader.js"></script>
 	<script src="js/lib/OrbitControls.js"></script>
 	<script src="js/main.js"></script>
-		<script>
-			  
-		</script>
 	</body>
 </html>

@@ -23,16 +23,12 @@ class Room{
 
         this.socket1.searching = this.socket2 = false;
 
-        this.awaitingPlayers();
+        this.loadRes();
 
 
     }
-    awaitingPlayers(){
+    loadRes(){
         //отправка ресурсов карт
-
-
-
-
         this.connection.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.socket1.userId} and pos is not null)`,
         (err,result1)=>{
             this.connection.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.socket2.userId} and pos is not null)`,
@@ -40,8 +36,6 @@ class Room{
                 let Result = Object.assign({}, result1, result2);
                 this.io.to(this.roomName).emit("cardResLoad",Result);
             })
-            
-            //
         });
     }
     startGame(){

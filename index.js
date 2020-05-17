@@ -114,8 +114,6 @@ app.post('/reg', function(request, response) {
 					response.send('This nickname already used');
 					response.end();
 				} else {
-
-					
 						argon2.hash(request.body.password).then(hash =>{
 							connection.query(`INSERT INTO accounts (username, password, email, gold,rank_points,matches, matches_win) VALUES ('${nickname}', '${hash}', '${mail}', '0','0','0','0');`,(err,results)=>{
 								connection.query(`select id from accounts where email = '${mail}'`,(err,res)=>{
@@ -151,13 +149,7 @@ app.post('/reg', function(request, response) {
 								
 							});
 						});
-
-						
-
-					  
-
 				}
-			
 			}
 		);}
 	});
@@ -167,67 +159,52 @@ app.use((req,res,next) => {
     res.status(404).sendFile(path.join(__dirname + '/public/404.html'));
 });
 
+function cancelSearching(socket){
+	if (socket.searching){ //если пользователь внезапно закроет вкладку при поиске
+		let pos = -1;
+		for(let i = 0 ; i < searching.length-1; i++){
+			if(searching[i].id == socket.id){
+				pos = i;
+				break;
+			}
+		}
+		searching.splice(pos,1);
+		socket.searching = false;
+	}
+}
 
-
-io.on('connection', function(socket){
+io.on('connection', (socket)=>{
 	console.log('a user connected');
 	socket.searching = false;
-	console.log(socket.request.session);
+	// console.log(socket.request.session);
 	socket.userId = socket.request.session.playerId;
-	console.log(socket.userId);
-	// var cookie_string = socket.request.headers.cookie;
-	// if( cookieParser.JSONCookies(cookie_string).indexOf('session_cookie_name=s%3A')!=-1){
-	// 	let connect_sid = cookieParser.JSONCookies(cookie_string).split(';')[1].replace('session_cookie_name=s%3A','').split('.')[0].replace(' ','');
-	// 	console.log(connect_sid.length);
-	// 	sessionStore.get(connect_sid, function (error, session) {
-			
-
-	// 		if(session){
-	// 			session.mail
-	// 		}
-			
-	// 	  });
-  
-	// }
-
-
 		
-    socket.on('disconnect', function(){
-		if (socket.searching){
-			let pos = -1;
-			for(let i = 0 ; i<searching.length-1; i++){
-				if(searching[i].id == socket.id){
-					pos = i;
-					break;
-				}
-			}
-			searching.splice(pos,1);
-			socket.searching = false;
-		}
+    socket.on('disconnect', ()=>{
+		cancelSearching(socket);	
       console.log('user disconnected');
 	});
+
+	socket.on('cancelSearch',()=>{
+		cancelSearching(socket);
+	})
+
+	
+
 	socket.on('searching', function(msg){
 		socket.searching = true;
         searching.push(socket);
-        console.log(searching);
-		
 	});
 });
+
 console.reset = function () {
     return process.stdout.write('\033c');
-  };
+};
+
 function searchingHandle(){
 	let timerId = setInterval(()=>{
 		if(searching.length >= 2){
 			let players = searching.splice(0,2);
-			rooms.push(new Room(io,connection,`room ${rooms.length+1}`,players[0],players[1]));
-			//rooms.push({name:`room ${rooms.length+1}`});
-			// for(let i = 0; i < players.length; i++){
-			// 	//rooms[rooms.length-1][`id${i}`] = players[i].id;
-			// 	players[i].join(`room ${rooms.length}`);
-			// 	players[i].searching = false;
-			// }
-			
+			rooms.push(new Room(io,connection,`room ${rooms.length+1}`,players[0],players[1]));			
 			io.to(`room ${rooms.length}`).emit('gameFounded');//test
 
         }
