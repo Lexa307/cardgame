@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const argon2 = require('argon2');
 const mysql = require('mysql');
+const Room = require('./exports/Room.js')
 
 var options = {
     host: 'localhost',
@@ -117,10 +118,38 @@ app.post('/reg', function(request, response) {
 					
 						argon2.hash(request.body.password).then(hash =>{
 							connection.query(`INSERT INTO accounts (username, password, email, gold,rank_points,matches, matches_win) VALUES ('${nickname}', '${hash}', '${mail}', '0','0','0','0');`,(err,results)=>{
-								request.session.loggedin = true;
-								request.session.mail = mail;
-								response.redirect('/home');
-								});
+								connection.query(`select id from accounts where email = '${mail}'`,(err,res)=>{
+									let userid = res[0].id;
+									//console.log(`user: ${userid}`);
+									connection.query(`SELECT card_id from card where pack_id = 1`,
+									(err,result)=>{
+										//console.log(result)
+										let cards = result;
+										let queryStringInsertCards = `INSERT INTO deck(user_id, card_id, pos) values `;
+										for(let i = 0 ; i < cards.length; i++ ){
+											queryStringInsertCards+=`(${userid},${cards[i].card_id},${i}),`
+										}
+										queryStringInsertCards = queryStringInsertCards.substr(0,queryStringInsertCards.length-1)
+										queryStringInsertCards+=`;`;
+										//console.log(queryStringInsertCards);
+
+										connection.query(queryStringInsertCards,
+											(err,result)=>{
+												request.session.loggedin = true;
+												request.session.mail = mail;
+												request.session.nickname = nickname;
+												request.session.gold = 0;
+												request.session.playerId = userid;
+												response.redirect('/home');
+											})
+										
+									})
+									
+									
+
+								})
+								
+							});
 						});
 
 						
@@ -144,6 +173,8 @@ io.on('connection', function(socket){
 	console.log('a user connected');
 	socket.searching = false;
 	console.log(socket.request.session);
+	socket.userId = socket.request.session.playerId;
+	console.log(socket.userId);
 	// var cookie_string = socket.request.headers.cookie;
 	// if( cookieParser.JSONCookies(cookie_string).indexOf('session_cookie_name=s%3A')!=-1){
 	// 	let connect_sid = cookieParser.JSONCookies(cookie_string).split(';')[1].replace('session_cookie_name=s%3A','').split('.')[0].replace(' ','');
@@ -189,13 +220,15 @@ function searchingHandle(){
 	let timerId = setInterval(()=>{
 		if(searching.length >= 2){
 			let players = searching.splice(0,2);
-			rooms.push({name:`room ${rooms.length+1}`});
-			for(let i = 0; i < players.length; i++){
-				rooms[rooms.length-1][`id${i}`] = players[i].id;
-				players[i].join(`room ${rooms.length}`);
-				players[i].searching = false;
-			}
-			io.to(`room ${rooms.length}`).emit('startGame');
+			rooms.push(new Room(io,connection,`room ${rooms.length+1}`,players[0],players[1]));
+			//rooms.push({name:`room ${rooms.length+1}`});
+			// for(let i = 0; i < players.length; i++){
+			// 	//rooms[rooms.length-1][`id${i}`] = players[i].id;
+			// 	players[i].join(`room ${rooms.length}`);
+			// 	players[i].searching = false;
+			// }
+			
+			io.to(`room ${rooms.length}`).emit('gameFounded');//test
 
         }
        // console.reset();

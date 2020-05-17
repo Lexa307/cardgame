@@ -6,16 +6,26 @@
 		<link rel="stylesheet" href="css/style.css">
 		<title>Login </title>
 		<style>
+			  body, html {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        height: 100%;
+        width: 100%;
+        margin: 0 0 0 0;
+        padding: 0 0 0 0;
+        }
 			.login-form {
 		width: 90%;
 		height: 90%;
         margin: 0 auto;
     }
+
 		</style>
 	</head>
 	
 	<body>
-    <div class="wrapper">
+    <div class="wrapper" id = "wrapper" >
 		  <div class="login-form">
 			  
 				<input type="submit" value="Search game" id = "SearhButton" >
@@ -24,13 +34,12 @@
       </div>
 	</div>
 	<script src="js/lib/socket.io.js"></script>
+	<script src="js/lib/three.min.js"></script>
+	<script src="js/lib/GLTFLoader.js"></script>
+	<script src="js/lib/OrbitControls.js"></script>
+	<script src="js/main.js"></script>
 		<script>
-			  var socket = io();
-			  let Sbtn = document.getElementById("SearhButton");
-			  Sbtn.addEventListener('click',findGame,false);
-			  function findGame () {
-				socket.emit('searching', 'username');
-			  }
+			  
 		</script>
 	</body>
 </html>
