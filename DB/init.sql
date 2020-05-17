@@ -31,11 +31,12 @@ CREATE TABLE IF NOT EXISTS `packs` (
 ENGINE = InnoDB CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `logic` (
-`id` INT ,
+`logic_id` INT NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(45) ,
-`description` VARCHAR(255)
+`description` VARCHAR(255),
+ PRIMARY KEY (`logic_id`)
 )ENGINE = InnoDB CHARSET=utf8;
-CREATE INDEX fk_logic_id ON logic (id);
+
 
 CREATE TABLE IF NOT EXISTS `card` (
   `card_id` INT NOT NULL AUTO_INCREMENT,
@@ -53,9 +54,8 @@ CREATE TABLE IF NOT EXISTS `card` (
   CONSTRAINT pack_id_fk 
      FOREIGN KEY (`pack_id`)
  REFERENCES `carddb`.`packs` (`pack_id`) ON DELETE SET NULL,
- CONSTRAINT logic_id_fk 
   FOREIGN KEY (`logic_id`)
- REFERENCES `carddb`.`logic` (`id`) ON DELETE SET NULL,
+ REFERENCES `carddb`.`logic` (`logic_id`) ON DELETE SET NULL,
   PRIMARY KEY (`card_id`))
 ENGINE = InnoDB CHARSET=utf8;
 
@@ -86,16 +86,16 @@ INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank
 INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ( 'test9', '$argon2i$v=19$m=4096,t=3,p=1$MMHe80nfoBAetzqBPuzoTg$0BwZjl7onDLFwBzTWcqXBUTG5szpldvQUkb8hwLnLxI', 'test9@test.ru', 5000, 0, 1, 0, 0);
 INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ( 'test10', '$argon2i$v=19$m=4096,t=3,p=1$MMHe80nfoBAetzqBPuzoTg$0BwZjl7onDLFwBzTWcqXBUTG5szpldvQUkb8hwLnLxI', 'test10@test.ru', 5000, 0, 1, 0, 0);
 INSERT INTO `carddb`.`packs` (`pack_id`, `cost`, `name`, `pack_description`) VALUES (1, 0, 'StarterPuck', 'based pack for new players');
-INSERT INTO `carddb`.`logic` (`id`, `name`, `description`) VALUES (0, 'test', 'for developer');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,65, 'Норна', 'богиня судьбы, показывает какие карты подготовил  для вас противник.', 100, 1, 0, 'public/res/card1', 'skill');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (5, 0, 7,20, 'Эйнхерии', 'Один из сильнейших павших воинов. ', 100, 1, 0, 'public/res/card2', 'default');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (10, 0, 13,9, 'Валькирия ', 'Дочь славного война. ', 100, 1, 0, 'public/res/card3', 'default');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,7, 'Хель', 'Богиня смерти, убивает выбранного всех противников, чье здоровье меньше или равно 2м.', 100, 1, 0, 'public/res/card4', 'skill');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,1, 'Эйр ', 'Богиня Медицины, Поднимает здоровье всех союзных существ 2 единицы.', 100, 1,0, 'public/res/card5', 'skill');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,3, 'Видар', 'бог мести. Заклинает союзное существо, при  его гибели, погибает  и сам палач. ', 100, 1, 0, 'public/res/card6', 'skill');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,3, 'Огненный великан', 'Способен манипулировать огнём, опасный страж, через которого никто не пройдет ', 100, 1, 0, 'public/res/card7', 'provoke');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (3, 10, 4,2, 'Локи', 'Бог обмана .При достаточном  накоплении магического запаса способен создать своего клона. ', 100,1, 0, 'public/res/card8', 'default');
-INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (4, 0, 5,5, 'Стрелок Адрик', 'Стрелок Адрик', 100, 1, 0, 'public/res/card9', 'default');
+INSERT INTO `carddb`.`logic` (`name`, `description`) VALUES ('test', 'for developer');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,65, 'Норна', 'богиня судьбы, показывает какие карты подготовил  для вас противник.', 100, 1, 1, 'public/res/card1', 'skill');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (5, 0, 7,20, 'Эйнхерии', 'Один из сильнейших павших воинов. ', 100, 1, 1, 'public/res/card2', 'default');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (10, 0, 13,9, 'Валькирия ', 'Дочь славного война. ', 100, 1, 1, 'public/res/card3', 'default');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,7, 'Хель', 'Богиня смерти, убивает выбранного всех противников, чье здоровье меньше или равно 2м.', 100, 1, 1, 'public/res/card4', 'skill');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,1, 'Эйр ', 'Богиня Медицины, Поднимает здоровье всех союзных существ 2 единицы.', 100, 1,1, 'public/res/card5', 'skill');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,3, 'Видар', 'бог мести. Заклинает союзное существо, при  его гибели, погибает  и сам палач. ', 100, 1, 1, 'public/res/card6', 'skill');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (0, 0, 0,3, 'Огненный великан', 'Способен манипулировать огнём, опасный страж, через которого никто не пройдет ', 100, 1, 1, 'public/res/card7', 'provoke');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (3, 10, 4,2, 'Локи', 'Бог обмана .При достаточном  накоплении магического запаса способен создать своего клона. ', 100,1, 1, 'public/res/card8', 'default');
+INSERT INTO `carddb`.`card` (`hp_pull`, `mana_pull`, `damage`,`coast`, `card_name`, `card_description`, `drop_rate`, `pack_id`, `logic_id`, `res_path`, `card_type`) VALUES (4, 0, 5,5, 'Стрелок Адрик', 'Стрелок Адрик', 100, 1, 1, 'public/res/card9', 'default');
 -- insert into carddb.deck(user_id,card_id,pos) values (1,9,9);
 -- insert into carddb.deck(user_id,card_id,pos) values (1,8,8);
 -- insert into carddb.deck(user_id,card_id,pos) values (1,7,7);
