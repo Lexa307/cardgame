@@ -132,8 +132,13 @@ function exitFromSystem(){
   var body = ''
   xhr.open("POST", '/exit', true);
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.onreadystatechange = ()=>{
+    console.log(xhr);
+    window.location.reload();
+  }
   xhr.send(body);
-  console.log(xhr);
+  
+  
 }
 
 function bind(func, context) {

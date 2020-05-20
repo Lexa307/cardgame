@@ -67,7 +67,9 @@ app.post('/auth',function(request,response){
 });
 app.post('/exit',(req,res)=>{
 	req.session.destroy(() => {
+		res.clearCookie('session_cookie_name', {path: '/home'})
 		res.redirect('/');
+		
 	  });
 })
 
