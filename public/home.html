@@ -33,6 +33,13 @@
 			height: 30vh;
 			display: none;
 		}
+		.accblock{
+			position: absolute;
+			top:0px;
+			right: 0px;
+			border: 2px solid black;
+			color: white;
+		}
 		.searcher input[type="submit"]{
 			margin-top: 1vh;
 			font-family: Roboto;
@@ -74,6 +81,7 @@
 		<h1>Поиск игроков...</h1>
 		<input type="submit" value="Отмена" id = "cancel" >
 	</div>
+	<div class="accblock" id = "accInfo"></div>
 	<script src="js/lib/socket.io.js"></script>
 	<script src="js/lib/three.min.js"></script>
 	<script src="js/lib/GLTFLoader.js"></script>

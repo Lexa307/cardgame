@@ -2,6 +2,9 @@ var socket = io();
 let a = null;
 document.getElementById("SearhButton").addEventListener('click',findGame,false);
 document.getElementById("cancel").addEventListener('click',canselSearch,false);
+document.getElementById("exit").addEventListener('click',exitFromSystem,false);
+
+socket.emit("getAccData");
 
 let searvherTimer = null;
   
@@ -66,6 +69,7 @@ class Game{
     loadRes(){
       // this.bgImage = document.body.style.backgroundImage;
       // document.body.style.backgroundImage = "none";
+      document.getElementById('accInfo').style.display = "none";
       document.getElementById('wrapper').style.display = 'none';
       document.getElementById('serchPanel').style.display = 'none';
         this.mouse = new THREE.Vector2(0,0);
@@ -114,6 +118,18 @@ socket.on("cardResLoad",(msg)=>{
 socket.on("gameFounded",(msg)=>{
   document.getElementById('serchPanel').innerHTML = `<h1>Игра найдена!</h1> <br> Запуск матча...`
 })
+socket.on("accData",(msg)=>{
+  document.getElementById('accInfo').innerText = 
+`${msg.nickname}
+боев:${msg.battles}
+побед:${msg.win}
+ранг:${msg.rank}
+золота:${msg.gold}`
+})
+
+function exitFromSystem(){
+  socket.emit("exitFromSystem");
+}
 
 function bind(func, context) {
 	return function() {
@@ -122,4 +138,5 @@ function bind(func, context) {
 }
 function removeGame(){
   delete a;
+  document.getElementById('accInfo').style.display = "block";
 }

@@ -63,45 +63,94 @@ app.get('/', function(request, response) {
 });
 
 app.post('/auth',function(request,response){
-    var mail = request.body.mail;
-	var password = request.body.password;
-	if (mail && password) {
-
-			connection.query(`SELECT password FROM accounts WHERE email = '${mail}';` , (err,results)=> {
-				if (results.length > 0) {
-					try {
-						argon2.verify(results[0].password, password).then(answer =>{
-							if(answer){
-								
-								request.session.loggedin = true;
-                                request.session.mail = mail;
-								response.redirect('/home');
-							} else {
-								// password did not match
-								response.send('Incorrect Username and/or Password!');
-							  }
-						}); 
-							
-						 
-					  } catch (error) {
-						// internal failure
-						response.send('server error!');
-					  }
-
-					
-				} else {
-					response.send('Incorrect Username and/or Password!');
-				}			
-			});
-	
-		
-			} else {
-		response.send('Please enter Username and Password!');
-		response.end();
-	}
+	authUser(request,response);
 });
 
 app.post('/reg', function(request, response) {
+	registerUser(request,response);
+});
+
+app.use((req,res,next) => {
+    res.status(404).sendFile(path.join(__dirname + '/public/404.html'));
+});
+
+
+
+function cancelSearching(socket){
+	if (socket.searching){ //если пользователь внезапно закроет вкладку при поиске
+		let pos = -1;
+		for(let i = 0 ; i < searching.length; i++){
+			if(searching[i].id == socket.id){
+				pos = i;
+				break;
+			}
+		}
+		searching.splice(pos,1);
+		socket.searching = false;
+	}
+}
+
+function endGame(socket){
+	if(socket.inGame){
+
+		for(let i = 0; i < rooms.length; i++){
+			if(rooms[i].roomName == Object.keys(socket.adapter.rooms)[1]){
+				rooms[i].endGame(socket);
+				console.log(rooms.length);
+				rooms.splice(i,1);
+				console.log(rooms.length);
+			}
+		}
+	}
+}
+
+io.on('connection', (socket)=>{
+	console.log('a user connected');
+	socket.searching = false;
+	// console.log(socket.request.session);
+	socket.userId = socket.request.session.playerId;
+		
+    socket.on('disconnect', ()=>{
+		cancelSearching(socket);
+		endGame(socket);
+
+      console.log('user disconnected');
+	});
+
+	socket.on("getAccData",()=>{
+		
+		io.to(socket.id).emit("accData",{nickname:socket.request.session.nickname,gold:socket.request.session.gold,win:0,rank:"не откалиброван",battles:0})
+	})
+
+	socket.on('cancelSearch',()=>{
+		cancelSearching(socket);
+	})
+
+	
+
+	socket.on('searching', function(msg){
+		if(socket.inGame||socket.searching){return;}
+		socket.searching = true;
+        searching.push(socket);
+	});
+});
+
+
+
+function searchingHandle(){
+	let timerId = setInterval(()=>{
+		if(searching.length >= 2){
+			let players = searching.splice(0,2);
+			rooms.push(new Room(io,connection,`room ${rooms.length+1}`,players[0],players[1]));			
+			io.to(`room ${rooms.length}`).emit('gameFounded');//test
+
+        }
+       // console.reset();
+        
+	},100);
+}
+
+function registerUser(request,response){
 	var nickname = request.body.nickname;
 	var mail = request.body.mail;
 	connection.query(`SELECT * FROM accounts WHERE email = '${mail}';`,(err,results)=>{
@@ -153,83 +202,44 @@ app.post('/reg', function(request, response) {
 			}
 		);}
 	});
-});
-
-app.use((req,res,next) => {
-    res.status(404).sendFile(path.join(__dirname + '/public/404.html'));
-});
-
-
-
-function cancelSearching(socket){
-	if (socket.searching){ //если пользователь внезапно закроет вкладку при поиске
-		let pos = -1;
-		for(let i = 0 ; i < searching.length; i++){
-			if(searching[i].id == socket.id){
-				pos = i;
-				break;
-			}
-		}
-		searching.splice(pos,1);
-		socket.searching = false;
-	}
 }
+function authUser(request,response){
+	var mail = request.body.mail;
+	var password = request.body.password;
+	if (mail && password) {
 
-function endGame(socket){
-	if(socket.inGame){
+			connection.query(`SELECT password FROM accounts WHERE email = '${mail}';` , (err,results)=> {
+				if (results.length > 0) {
+					try {
+						argon2.verify(results[0].password, password).then(answer =>{
+							if(answer){
+								
+								request.session.loggedin = true;
+                                request.session.mail = mail;
+								response.redirect('/home');
+							} else {
+								// password did not match
+								response.send('Incorrect Username and/or Password!');
+							  }
+						}); 
+							
+						 
+					  } catch (error) {
+						// internal failure
+						response.send('server error!');
+					  }
 
-		for(let i = 0; i < rooms.length; i++){
-			if(rooms[i].roomName == Object.keys(socket.adapter.rooms)[1]){
-				rooms[i].endGame(socket);
-				console.log(rooms.length);
-				rooms.splice(i,1);
-				console.log(rooms.length);
-			}
-		}
-	}
-}
-
-io.on('connection', (socket)=>{
-	console.log('a user connected');
-	socket.searching = false;
-	// console.log(socket.request.session);
-	socket.userId = socket.request.session.playerId;
-		
-    socket.on('disconnect', ()=>{
-		cancelSearching(socket);
-		endGame(socket);
-
-      console.log('user disconnected');
-	});
-
-	socket.on('cancelSearch',()=>{
-		cancelSearching(socket);
-	})
-
+					
+				} else {
+					response.send('Incorrect Username and/or Password!');
+				}			
+			});
 	
-
-	socket.on('searching', function(msg){
-		if(socket.inGame||socket.searching){return;}
-		socket.searching = true;
-        searching.push(socket);
-	});
-});
-
-console.reset = function () {
-    return process.stdout.write('\033c');
-};
-
-function searchingHandle(){
-	let timerId = setInterval(()=>{
-		if(searching.length >= 2){
-			let players = searching.splice(0,2);
-			rooms.push(new Room(io,connection,`room ${rooms.length+1}`,players[0],players[1]));			
-			io.to(`room ${rooms.length}`).emit('gameFounded');//test
-
-        }
-       // console.reset();
-        
-	},100);
+		
+			} else {
+		response.send('Please enter Username and Password!');
+		response.end();
+	}
 }
 searchingHandle();
 
