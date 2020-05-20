@@ -128,7 +128,12 @@ socket.on("accData",(msg)=>{
 })
 
 function exitFromSystem(){
-  socket.emit("exitFromSystem");
+  var xhr = new XMLHttpRequest();
+  var body = ''
+  xhr.open("POST", '/exit', true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.send(body);
+  console.log(xhr);
 }
 
 function bind(func, context) {

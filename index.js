@@ -65,6 +65,11 @@ app.get('/', function(request, response) {
 app.post('/auth',function(request,response){
 	authUser(request,response);
 });
+app.post('/exit',(req,res)=>{
+	req.session.destroy(() => {
+		res.redirect('/');
+	  });
+})
 
 app.post('/reg', function(request, response) {
 	registerUser(request,response);
@@ -154,6 +159,7 @@ function registerUser(request,response){
 	var nickname = request.body.nickname;
 	var mail = request.body.mail;
 	connection.query(`SELECT * FROM accounts WHERE email = '${mail}';`,(err,results)=>{
+		console.log(results);
 		if (results.length > 0) {
 			response.send('This user alreafy exist');
 			response.end();
@@ -208,14 +214,17 @@ function authUser(request,response){
 	var password = request.body.password;
 	if (mail && password) {
 
-			connection.query(`SELECT password FROM accounts WHERE email = '${mail}';` , (err,results)=> {
+			connection.query(`SELECT * FROM accounts WHERE email = '${mail}';` , (err,results)=> {
 				if (results.length > 0) {
 					try {
 						argon2.verify(results[0].password, password).then(answer =>{
 							if(answer){
 								
 								request.session.loggedin = true;
-                                request.session.mail = mail;
+								request.session.mail = mail;
+								request.session.nickname = results[0].username;
+								request.session.gold = results[0].gold;
+								request.session.playerId = results[0].id;
 								response.redirect('/home');
 							} else {
 								// password did not match

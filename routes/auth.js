@@ -19,7 +19,7 @@ router.get('/', function(request, response) {
 	if(request.session.loggedin == true){
 		response.redirect('/home')
 	}else{
-		
+		console.log('send login');
 		response.sendFile(path.dirname(__dirname) + '/public/login.html');
 	}
 	
