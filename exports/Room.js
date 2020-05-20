@@ -43,7 +43,14 @@ class Room{
 
     }
     endGame(socket){//send looser
+        let tmpsockets = [this.socket1,this.socket2];
+        for(let i = 0; i< tmpsockets.length; i++){
+            this.connection.query(`UPDATE accounts set matches = matches +1 where id = ${tmpsockets[i].userId}`);
+        }
+        this.connection.query(`UPDATE accounts set matches_win = matches_win +1 where id = ${(socket.id == this.socket1.id)?this.socket2.userId:this.socket1.userId}`);
+
         this.io.to(this.roomName).emit('closeGame')
+
         this.socket1.leave(this.roomName);
         this.socket2.leave(this.roomName);
         

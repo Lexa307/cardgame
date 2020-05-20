@@ -149,4 +149,5 @@ function bind(func, context) {
 function removeGame(){
   delete a;
   document.getElementById('accInfo').style.display = "block";
+  socket.emit("getAccData");
 }

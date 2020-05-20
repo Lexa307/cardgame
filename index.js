@@ -125,8 +125,32 @@ io.on('connection', (socket)=>{
 	});
 
 	socket.on("getAccData",()=>{
+		connection.query(`SELECT * from accounts where id = ${socket.userId} ;`,(err,res)=>{
+			if(res[0].rank == null){
+				io.to(socket.id).emit("accData",
+				{
+					nickname:socket.request.session.nickname,
+					gold:res[0].gold,
+					win:res[0].matches_win,
+					rank:"Не откалиброван",
+					battles:res[0].matches
+				})
+			}else{
+				connection.query(`SELECT rank_name from ranks where rank_id = ${res[0].rank}`,(err,result)=>{
+					console.log(res);
+					io.to(socket.id).emit("accData",
+					{
+						nickname:socket.request.session.nickname,
+						gold:res[0].gold,
+						win:res[0].matches_win,
+						rank:result[0].rank_name,
+						battles:res[0].matches
+					})				
+				})
+			}
+
+		})
 		
-		io.to(socket.id).emit("accData",{nickname:socket.request.session.nickname,gold:socket.request.session.gold,win:0,rank:"не откалиброван",battles:0})
 	})
 
 	socket.on('cancelSearch',()=>{
@@ -137,6 +161,9 @@ io.on('connection', (socket)=>{
 
 	socket.on('searching', function(msg){
 		if(socket.inGame||socket.searching){return;}
+		for(let i = 0; i<searching.length; i++){
+			if(searching.userId == socket.userId){return;}
+		}
 		socket.searching = true;
         searching.push(socket);
 	});
