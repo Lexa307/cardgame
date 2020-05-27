@@ -10,7 +10,7 @@ let searvherTimer = null;
   
 class Game{
 
-    constructor(selector){
+    constructor(cards,selector){
         
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x3F3683);
@@ -23,6 +23,9 @@ class Game{
         this.renderer = selector ? (()=>{ return new THREE.WebGLRenderer( { canvas: selector, context: selector.getContext( 'webgl', { alpha: true,antialias:true } ) } );})()  : new THREE.WebGLRenderer({alpha: true,antialias:true})
         this.camera = new THREE.PerspectiveCamera( 54, window.innerWidth / (window.innerHeight), 0.1, 60000 );
         }
+        this.cards = cards;
+        this.ourColodCardS = [];
+        this.enemyColodCards = [];
         this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize( window.innerWidth, (window.innerHeight) );//(window.innerWidth/1.77)
         document.body.appendChild( this.renderer.domElement );
@@ -87,12 +90,33 @@ class Game{
                 loader.load('card/card_models.glb',bind(function(gltf){
                   this.colodCard = gltf.scene.children[0];
                   this.fieldCard = gltf.scene.children[1];
+                  console.log(this.colodCard);
+                  new THREE.TextureLoader().load("textures/card/card_default.jpg",bind((textureD)=>{
+                    console.log("default loaded");
+                    textureD.flipY = false;
+                    this.colodCard.material.map = textureD;
+                  },this))
+                  for(let i = 0; i < this.cards[0].length; i++ ){
+                    new THREE.TextureLoader().load(`${this.cards[0][i]["res_path"]}/hero_default.jpg`,bind((texture)=>{
+                      texture.center = new THREE.Vector2(0.5,0.5);
+                      texture.rotation = 1;
+                      this.ourColodCardS.push(this.colodCard.clone())
+                      this.ourColodCardS[this.ourColodCardS.length-1].children[0].material = new THREE.MeshLambertMaterial({map:texture});
+                      this.scene.add(this.ourColodCardS[this.ourColodCardS.length-1]);
+                      this.ourColodCardS[this.ourColodCardS.length-1].position.x = -16;
+                      this.ourColodCardS[this.ourColodCardS.length-1].position.z = (10 + i*2.5);
+                      this.ourColodCardS[this.ourColodCardS.length-1].position.y = 10;
+                      this.ourColodCardS[this.ourColodCardS.length-1].rotation.y = Math.PI/2;
+                      
+                    },this))  
+                  }
+                  
                   this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
                   this.controls.target = new THREE.Vector3(-10,  20,  26);
                   this.controls.update();  
+                  console.log(this.cards);
                   this.animate();  
                 },this))
-                
             },this)
             );
       }
@@ -111,7 +135,7 @@ function canselSearch(){
 }
 socket.on("cardResLoad",(msg)=>{
   console.log(msg);
-  setTimeout(()=>{a = new Game();},5000)
+  setTimeout(()=>{a = new Game(msg);},5000)
   
 
 })
