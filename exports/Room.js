@@ -23,7 +23,6 @@ class Room{
 
         this.socket1.inGame = this.socket2.inGame = true;
         this.socket1.searching = this.socket2.searching = false;
-
         this.loadRes();
 
 

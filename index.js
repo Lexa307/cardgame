@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const argon2 = require('argon2');
 const mysql = require('mysql');
-const Room = require('./exports/Room.js')
+const Room = require('./exports/Room.js');
 
 var options = {
     host: 'localhost',
@@ -67,11 +67,10 @@ app.post('/auth',function(request,response){
 });
 app.post('/exit',(req,res)=>{
 	req.session.destroy(() => {
-		res.clearCookie('session_cookie_name', {path: '/home'})
+		res.clearCookie('session_cookie_name', {path: '/home'});
 		res.redirect('/');
-		
 	  });
-})
+});
 
 app.post('/reg', function(request, response) {
 	registerUser(request,response);
@@ -145,17 +144,15 @@ io.on('connection', (socket)=>{
 						win:res[0].matches_win,
 						rank:result[0].rank_name,
 						battles:res[0].matches
-					})				
-				})
+					});				
+				});
 			}
-
-		})
-		
-	})
+		});
+	});
 
 	socket.on('cancelSearch',()=>{
 		cancelSearching(socket);
-	})
+	});
 
 	
 
@@ -209,9 +206,9 @@ function registerUser(request,response){
 										let cards = result;
 										let queryStringInsertCards = `INSERT INTO deck(user_id, card_id, pos) values `;
 										for(let i = 0 ; i < cards.length; i++ ){
-											queryStringInsertCards+=`(${userid},${cards[i].card_id},${i}),`
+											queryStringInsertCards+=`(${userid},${cards[i].card_id},${i}),`;
 										}
-										queryStringInsertCards = queryStringInsertCards.substr(0,queryStringInsertCards.length-1)
+										queryStringInsertCards = queryStringInsertCards.substr(0,queryStringInsertCards.length-1);
 										queryStringInsertCards+=`;`;
 										//console.log(queryStringInsertCards);
 
@@ -223,13 +220,13 @@ function registerUser(request,response){
 												request.session.gold = 0;
 												request.session.playerId = userid;
 												response.redirect('/home');
-											})
-										
-									})
+											});
+									
+									});
 									
 									
 
-								})
+								});
 								
 							});
 						});
