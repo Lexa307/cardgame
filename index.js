@@ -134,7 +134,7 @@ io.on('connection', (socket)=>{
 					win:res[0].matches_win,
 					rank:"Не откалиброван",
 					battles:res[0].matches
-				})
+				});
 			}else{
 				connection.query(`SELECT rank_name from ranks where rank_id = ${res[0].rank}`,(err,result)=>{
 					console.log(res);
