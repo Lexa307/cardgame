@@ -182,18 +182,31 @@ function searchingHandle(){
 }
 
 function registerUser(request,response){
-	var nickname = request.body.nickname;
-	var mail = request.body.mail;
+	let nickname = request.body.nickname;
+	let mail = request.body.mail;
+	//to do: form validation on server side!
+	let r = /[^A-Z-a-z-0-9]/;
+	if(r.test(nickname)){
+		response.json({message:" В никнейме должны быть только латинские буквы и цифры"});
+		response.end();
+		return;
+	}
+	if(r.test(request.body.password)){
+		response.json({message:" В пароле введены недопустимые символы. Разрешены латинские буквы и цифры"});
+		response.end();
+		return;
+	}
 	connection.query(`SELECT * FROM accounts WHERE email = '${mail}';`,(err,results)=>{
-		console.log(results);
 		if (results.length > 0) {
-			response.send('This user alreafy exist');
+			response.json({message:'Введенная почта уже зарегистрирована'});
 			response.end();
+			return;
 		} else {
 			connection.query(`SELECT * FROM accounts WHERE username = '${nickname}';`,(err,results)=>{
 				if (results.length > 0) {
-					response.send('This nickname already used');
+					response.json({message:'Этот никнейм уже используется'});
 					response.end();
+					return;
 				} else {
 						argon2.hash(request.body.password).then(hash =>{
 							connection.query(`INSERT INTO accounts (username, password, email, gold,rank_points,matches, matches_win) VALUES ('${nickname}', '${hash}', '${mail}', '0','0','0','0');`,(err,results)=>{
@@ -238,6 +251,12 @@ function registerUser(request,response){
 function authUser(request,response){
 	var mail = request.body.mail;
 	var password = request.body.password;
+	let r = /[^A-Z-a-z-0-9]/;
+	if(r.test(request.body.password)){
+		response.json({message:" В пароле введены недопустимые символы. Разрешены латинские буквы и цифры"});
+		response.end();
+		return;
+	}
 	if (mail && password) {
 
 			connection.query(`SELECT * FROM accounts WHERE email = '${mail}';` , (err,results)=> {
@@ -254,25 +273,28 @@ function authUser(request,response){
 								response.redirect('/home');
 							} else {
 								// password did not match
-								response.send('Incorrect Username and/or Password!');
+								response.json({message:'Неправильный пользователь или пароль'});
+								response.end();
 							  }
 						}); 
 							
 						 
 					  } catch (error) {
 						// internal failure
-						response.send('server error!');
+						response.json({message:'Ошибка сервера!'});
+						response.end();
 					  }
 
 					
 				} else {
-					response.send('Incorrect Username and/or Password!');
+					response.json({message:'Неправильный пользователь или пароль'});
+					response.end();
 				}			
 			});
 	
 		
 			} else {
-		response.send('Please enter Username and Password!');
+		response.json({message:'Пожалуйста введите почту и пароль!'});
 		response.end();
 	}
 }
