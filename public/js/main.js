@@ -38,8 +38,13 @@ class Game{
           document.getElementById('serchPanel').innerHTML = `<h1>Поиск игроков...</h1>
           <input type="submit" value="Отмена" id = "cancel" >`;
           removeGame();
-
+        
         },this))
+        this.firstCards = [];
+        socket.on('ChooseCard',bind(()=>{
+          console.log("chosing begining");
+          this.repickStartCards();
+        },this));
         this.loadRes();
     }
 
@@ -52,12 +57,11 @@ class Game{
     }
 
     animate () {
+        this.camera.lookAt(this.focus);
         this.requestId = requestAnimationFrame( this.animate.bind(this) );
         this.renderer.render( this.scene, this.camera );
         this.raycaster.setFromCamera( this.mouse, this.camera );
-        var intersects = this.raycaster.intersectObjects( this.scene.children );
-
-        
+        var intersects = this.raycaster.intersectObjects( this.scene.children );     
     }
 
 
@@ -67,7 +71,81 @@ class Game{
     onMouseMove ( event ) {
       this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
       this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+      TweenMax.to(this.focus,0.5,{x:-10+this.mouse.y*2,z:26+this.mouse.x*0.5,ease: Power2.easeOut})
     }
+
+    repickStartCards(){
+      let chCards = [...this.ourColodCardS];
+      
+      if(this.firstCards.length > 0){
+        for(let i = 0; i < this.firstCards.length; i++){
+          this.groupOf3Cards.remove(this.firstCards[i]);
+        }
+      }else{
+        this.groupOf3Cards.add(new THREE.Mesh(
+          new THREE.PlaneBufferGeometry(500,500,1,1),
+          new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.8})
+          )
+        );
+        this.groupOf3Cards.children[0].rotation.y = (Math.PI/2) ;
+        this.groupOf3Cards.children[0].position.y = -1;
+        let textGeometry = new THREE.TextBufferGeometry( "Выберите стартовую колоду", 
+          {
+              font: this.font,
+              size: 0.5,
+              height: 0,
+              curveSegments: 12,
+              bevelEnabled: false,
+          } 
+      );
+      textGeometry.computeBoundingBox(); 
+      textGeometry.translate( - 0.5 * ( textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x), 0, 0 );
+      this.groupOf3Cards.add(new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({color:0xFFFFFF})));
+      this.groupOf3Cards.children[1].rotation.y = Math.PI/2;
+      this.groupOf3Cards.children[1].position.y = 2;
+      this.groupOf3Cards.children[1].position.z = 3;
+
+      // let selectGeometry = new THREE.TextBufferGeometry( "Готово", 
+      // {
+      //     font: this.font,
+      //     size: 0.5,
+      //     height: 0,
+      //     curveSegments: 12,
+      //     bevelEnabled: false,
+      // } 
+      // );
+      // selectGeometry.computeBoundingBox(); 
+      // selectGeometry.translate( - 0.5 * ( selectGeometry.boundingBox.max.x - selectGeometry.boundingBox.min.x), 0, 0 );
+      // this.groupOf3Cards.add(new THREE.Mesh(selectGeometry, new THREE.MeshBasicMaterial({color:0xFFFFFF})));
+      // this.groupOf3Cards.children[2].rotation.y = Math.PI/2;
+      // this.groupOf3Cards.children[2].position.y = 0;
+      // this.groupOf3Cards.children[2].position.z = -1;
+      // this.groupOf3Cards.children[2].position.x = 4;
+
+      }
+
+      this.firstCards = [];
+      for(let i = 0; i < 3; i++){
+        let tmpObject = chCards.splice(THREE.Math.randInt(0,chCards.length - 1),1)[0];
+        this.firstCards.push(tmpObject);
+        this.groupOf3Cards.add(this.firstCards[i]);
+        this.firstCards[i].position.set(1,0,(i*2.5));
+        this.groupOf3Cards.position.set(0,0,-10);
+        this.camera.attach(this.groupOf3Cards);
+        this.firstCards[i].rotation.y = Math.PI/2;
+        this.groupOf3Cards.position.x = 2.6;
+      }
+    }
+    generateText(card){
+      if(card.info){
+        let textMaterial = new THREE.MeshBasicMaterial({color:0x000000});
+        let tittleText = card.info.card_name;
+        let tittle = new THREE.TextBufferGeometry("")
+      }else{
+        return;
+      }
+    }
+
    
     loadRes(){
       // this.bgImage = document.body.style.backgroundImage;
@@ -75,8 +153,12 @@ class Game{
       document.getElementById('accInfo').style.display = "none";
       document.getElementById('wrapper').style.display = 'none';
       document.getElementById('serchPanel').style.display = 'none';
+        this.focus = new THREE.Vector3(-10,  20,  26);
+        this.groupOf3Cards = new THREE.Group();
+        this.scene.add(this.camera);
         this.mouse = new THREE.Vector2(0,0);
         this.raycaster = new THREE.Raycaster();
+        
         var ambientLight = new THREE.AmbientLight( 0xFFFFFF,0.9 ); 
         this.scene.add( ambientLight );
         this.light = new THREE.PointLight();
@@ -95,26 +177,31 @@ class Game{
                     console.log("default loaded");
                     textureD.flipY = false;
                     this.colodCard.material.map = textureD;
+                    new THREE.FontLoader().load( 'fonts/Montserrat Medium_Regular.json', bind(function ( font ){
+                      this.font = font;
+                    },this))
                   },this))
+                  let loadCounter = this.cards[0].length;
                   for(let i = 0; i < this.cards[0].length; i++ ){
                     new THREE.TextureLoader().load(`${this.cards[0][i]["res_path"]}/hero_default.jpg`,bind((texture)=>{
                       texture.center = new THREE.Vector2(0.5,0.5);
                       texture.rotation = 1;
                       this.ourColodCardS.push(this.colodCard.clone())
                       this.ourColodCardS[this.ourColodCardS.length-1].children[0].material = new THREE.MeshLambertMaterial({map:texture});
-                      this.scene.add(this.ourColodCardS[this.ourColodCardS.length-1]);
-                      this.ourColodCardS[this.ourColodCardS.length-1].position.x = -16;
-                      this.ourColodCardS[this.ourColodCardS.length-1].position.z = (10 + i*2.5);
-                      this.ourColodCardS[this.ourColodCardS.length-1].position.y = 10;
-                      this.ourColodCardS[this.ourColodCardS.length-1].rotation.y = Math.PI/2;
-                      
-                    },this))  
+                      this.ourColodCardS[this.ourColodCardS.length-1].info = this.cards[0];
+                      loadCounter--;
+                    },this));  
                   }
-                  
-                  this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
-                  this.controls.target = new THREE.Vector3(-10,  20,  26);
-                  this.controls.update();  
-                  console.log(this.cards);
+                  let awaitLoadingTimer = setInterval(()=>{
+                    if(loadCounter == 0){
+                      socket.emit("loadingReady");
+                      clearInterval(awaitLoadingTimer);
+                    }
+                  },100)
+                  // this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+                  // this.controls.target = new THREE.Vector3(-10,  20,  26);
+                  // this.controls.update();  
+                  document.addEventListener( 'mousemove', bind(this.onMouseMove,this), false );
                   this.animate();  
                 },this))
             },this)
