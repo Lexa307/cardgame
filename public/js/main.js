@@ -105,22 +105,25 @@ class Game{
       this.groupOf3Cards.children[1].position.y = 2;
       this.groupOf3Cards.children[1].position.z = 3;
 
-      // let selectGeometry = new THREE.TextBufferGeometry( "Готово", 
-      // {
-      //     font: this.font,
-      //     size: 0.5,
-      //     height: 0,
-      //     curveSegments: 12,
-      //     bevelEnabled: false,
-      // } 
-      // );
-      // selectGeometry.computeBoundingBox(); 
-      // selectGeometry.translate( - 0.5 * ( selectGeometry.boundingBox.max.x - selectGeometry.boundingBox.min.x), 0, 0 );
-      // this.groupOf3Cards.add(new THREE.Mesh(selectGeometry, new THREE.MeshBasicMaterial({color:0xFFFFFF})));
-      // this.groupOf3Cards.children[2].rotation.y = Math.PI/2;
-      // this.groupOf3Cards.children[2].position.y = 0;
-      // this.groupOf3Cards.children[2].position.z = -1;
-      // this.groupOf3Cards.children[2].position.x = 4;
+      let ok = document.createElement("div");
+      ok.style.position = "absolute";
+      ok.id = "ok";
+      ok.style.left = "90%";
+      ok.style.color = "white";
+      ok.style.top = "90%";
+      ok.innerText = "Готово";
+      document.body.appendChild(ok);
+
+      let repick = document.createElement("div");
+      repick.style.position = "absolute";
+      repick.id = "repick";
+      repick.style.left = "10%";
+      repick.style.color = "white";
+      repick.style.top = "90%";
+      repick.innerText = "Перевыбрать";
+      document.body.appendChild(repick);
+
+
 
       }
 
@@ -134,16 +137,79 @@ class Game{
         this.camera.attach(this.groupOf3Cards);
         this.firstCards[i].rotation.y = Math.PI/2;
         this.groupOf3Cards.position.x = 2.6;
+
       }
+      this.groupOf3Cards.children[2].children[1].position.x += 0.05;
+      this.groupOf3Cards.children[2].children[2].position.x += 0.05;
+      this.groupOf3Cards.children[4].children[1].position.x -= 0.1;
+      this.groupOf3Cards.children[4].children[2].position.x -= 0.1;
+    }
+    applyStartPack(){
+      TweenMax.to(this.groupOf3Cards.children[0].material,1,{opacity:0,onComplete:()=>{
+        this.groupOf3Cards.remove(this.groupOf3Cards.children[0]);
+        this.groupOf3Cards.remove(this.groupOf3Cards.children[0]);
+        document.getElementById("ok").remove();
+        document.getElementById("repick").remove();
+        for(let i = 0; i < this.groupOf3Cards.children.length; i++){
+          TweenMax.to(this.groupOf3Cards.children[i].position,1,{x:1.9,y:-2})
+        }
+        
+      }})
     }
     generateText(card){
-      if(card.info){
+        console.log(card);
         let textMaterial = new THREE.MeshBasicMaterial({color:0x000000});
         let tittleText = card.info.card_name;
-        let tittle = new THREE.TextBufferGeometry("")
-      }else{
-        return;
-      }
+        let tittle = new THREE.TextBufferGeometry( tittleText, 
+        {
+            font: this.font,
+            size: 0.5,
+            height: 0,
+            curveSegments: 12,
+            bevelEnabled: false,
+        }
+        
+        );
+        tittle.computeBoundingBox(); 
+        tittle.translate( - 0.5 * ( tittle.boundingBox.max.x - tittle.boundingBox.min.x), 0, 0 );
+        let textMesh = new THREE.Mesh(tittle,textMaterial);
+        textMesh.rotation.x = Math.PI/2;
+        textMesh.scale.set(0.2,0.2,0.2);
+        textMesh.position.y = 0.01;
+        textMesh.position.z = 1.15;
+        textMesh.rotation.y = Math.PI;
+        textMesh.rotation.z = Math.PI;
+
+        card.add(textMesh);
+
+        let descText = card.info.card_description;
+        descText = descText.match(new RegExp('.{1,' + 16 + '}', 'g'));
+
+        console.log(descText);
+        descText = descText.join('\n');
+        console.log(descText);
+        let desc = new THREE.TextBufferGeometry( descText, 
+        {
+            font: this.font,
+            size: 0.5,
+            height: 0,
+            curveSegments: 12,
+            bevelEnabled: false,
+        }
+        
+        );
+        desc.computeBoundingBox(); 
+        desc.translate( - 0.5 * ( desc.boundingBox.max.x - desc.boundingBox.min.x), 0, 0 );
+        let descMesh = new THREE.Mesh(desc,textMaterial);
+        descMesh.rotation.x = Math.PI/2;
+        descMesh.scale.set(0.16,0.16,0.16);
+        descMesh.position.y = 0.01;
+        descMesh.position.z = 1.4;
+        descMesh.rotation.y = Math.PI;
+        descMesh.rotation.z = Math.PI;
+
+        card.add(descMesh);
+    
     }
 
    
@@ -173,25 +239,28 @@ class Game{
                   this.colodCard = gltf.scene.children[0];
                   this.fieldCard = gltf.scene.children[1];
                   console.log(this.colodCard);
+                  let loadCounter = this.cards[0].length;
                   new THREE.TextureLoader().load("textures/card/card_default.jpg",bind((textureD)=>{
                     console.log("default loaded");
                     textureD.flipY = false;
                     this.colodCard.material.map = textureD;
                     new THREE.FontLoader().load( 'fonts/Montserrat Medium_Regular.json', bind(function ( font ){
                       this.font = font;
+                      
+                      for(let i = 0; i < this.cards[0].length; i++ ){
+                        new THREE.TextureLoader().load(`${this.cards[0][i]["res_path"]}/hero_default.jpg`,bind((texture)=>{
+                          texture.center = new THREE.Vector2(0.5,0.5);
+                          texture.rotation = 1;
+                          this.ourColodCardS.push(this.colodCard.clone())
+                          this.ourColodCardS[this.ourColodCardS.length-1].children[0].material = new THREE.MeshLambertMaterial({map:texture});
+                          this.ourColodCardS[this.ourColodCardS.length-1].info = this.cards[0][i];
+                          this.generateText(this.ourColodCardS[this.ourColodCardS.length-1]);
+                          loadCounter--;
+                        },this));  
+                      }
                     },this))
                   },this))
-                  let loadCounter = this.cards[0].length;
-                  for(let i = 0; i < this.cards[0].length; i++ ){
-                    new THREE.TextureLoader().load(`${this.cards[0][i]["res_path"]}/hero_default.jpg`,bind((texture)=>{
-                      texture.center = new THREE.Vector2(0.5,0.5);
-                      texture.rotation = 1;
-                      this.ourColodCardS.push(this.colodCard.clone())
-                      this.ourColodCardS[this.ourColodCardS.length-1].children[0].material = new THREE.MeshLambertMaterial({map:texture});
-                      this.ourColodCardS[this.ourColodCardS.length-1].info = this.cards[0];
-                      loadCounter--;
-                    },this));  
-                  }
+
                   let awaitLoadingTimer = setInterval(()=>{
                     if(loadCounter == 0){
                       socket.emit("loadingReady");
