@@ -1,3 +1,8 @@
+function bind(func, context) {
+	return function() {
+	  return func.apply(context, arguments);
+	};
+}
 class Room{
     constructor(io,connection,roomName,socket1,socket2){
         this.connection = connection;
@@ -18,6 +23,7 @@ class Room{
         //Карты на поле боя
         this.fieldCards1 = [];
         this.fieldCards2 = [];
+        this.round = 0;
 
         this.socket1.join(roomName);
         this.socket2.join(roomName);
@@ -81,14 +87,48 @@ class Room{
             }
         }, 500);
     }
+    roundChecker(){
+        if(this.round == 1){
+            this.changeRound(this.socket2);
+        }else{
+            this.changeRound(this.socket1);
+        }
+    }
+    endRound(socket){
+        if(socket.id == this.socket1.id){
+            this.changeRound(this.socket2);
+        }else{
+            this.changeRound(this.socket1);
+        }
+        clearInterval(this.timer);
+        this.timer = setInterval(bind(()=>{this.roundChecker()},this),60000);
+    }
 
     startGame(){
         this.updateGold();
+        let players = [this.socket1,this.socket2];
+        let player1 = players.splice(Math.round(0+Math.random()*(1 - 0)),1);//first player who starts round
+        this.changeRound(player1);
+        this.timer = setInterval(bind(()=>{this.roundChecker()},this),60000);
     }
     updateGold(){
         this.io.to(this.socket1.id).emit("updateGold",this.gold1);
         this.io.to(this.socket2.id).emit("updateGold",this.gold2);
     }
+    changeRound(socket){
+        if(socket.id == this.socket1.id){
+            this.io.to(this.socket1.id).emit("round",1);
+            this.io.to(this.socket2.id).emit("round",0);
+            this.round = 1;
+        }else{
+            this.io.to(this.socket1.id).emit("round",0);
+            this.io.to(this.socket2.id).emit("round",1);
+            this.round = 2;
+        }
+        this.gold1+=2;
+        this.gold2+=2;
+        this.updateGold();
+    }//who play as argument
 
     endGame(socket){//send looser
         let tmpsockets = [this.socket1,this.socket2];

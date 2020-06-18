@@ -43,6 +43,9 @@ class Game{
         socket.on('updateGold',bind((msg)=>{
           this.updateGold(msg);
         },this));
+        socket.on('round',bind((msg)=>{
+          this.updateRound(msg);
+        },this))
         socket.on('sendEnemy',bind((msg)=>{
           this.enemyName = msg;
           let EnemyNick = new THREE.TextBufferGeometry( this.enemyName, 
@@ -84,6 +87,54 @@ class Game{
         this.renderer.render( this.scene, this.camera );
         this.raycaster.setFromCamera( this.mouse, this.camera );
         var intersects = this.raycaster.intersectObjects( this.scene.children );     
+    }
+    updateRound(state){
+      if(this.roundMesh){
+        this.scene.remove(this.roundMesh);
+      }
+      if(this.roundLine){
+        this.scene.remove(this.roundLine);
+      }
+      let roundText;
+      if(state == 1){
+        roundText = new THREE.TextBufferGeometry( "Ваш ход", 
+          {
+              font: this.font,
+              size: 2,
+              height: 0,
+              curveSegments: 12,
+              bevelEnabled: false,
+          });
+          this.endRoundButton.visible = true; 
+          this.roundLine = new THREE.Mesh(new THREE.BoxBufferGeometry(0.5,0.5,50),new THREE.MeshBasicMaterial());
+      }else{
+        roundText = new THREE.TextBufferGeometry( "Ход противника", 
+        {
+            font: this.font,
+            size: 2,
+            height: 0,
+            curveSegments: 12,
+            bevelEnabled: false,
+        }); 
+        this.endRoundButton.visible = false;
+        this.roundLine = new THREE.Mesh(new THREE.BoxBufferGeometry(0.5,0.5,50),new THREE.MeshBasicMaterial({color:0xFF0000}));
+      }
+      this.scene.add(this.roundLine);
+      this.roundLine.position.set(-15,  20,  26);
+      
+      TweenMax.to(this.roundLine.scale,60,{z:0.001,onComplete:()=>{
+
+      }});
+      roundText.computeBoundingBox(); 
+      roundText.translate( - 0.5 * ( roundText.boundingBox.max.x - roundText.boundingBox.min.x), 0, 0 );
+      this.roundMesh = new THREE.Mesh(roundText,new THREE.MeshBasicMaterial({color:0xFF0000,transparent:true,opacity:1}));
+      this.scene.add(this.roundMesh);
+      this.roundMesh.position.set(-10,  20,  26);
+      this.roundMesh.lookAt(this.camera.position);
+      TweenMax.to(this.roundMesh.scale,2,{x:2,y:2,z:2});
+      TweenMax.to(this.roundMesh.material,2,{opacity:0,onComplete:()=>{
+        this.scene.remove(this.roundMesh);
+      }})
     }
     updateGold(count){
       if(this.goldMesh){
@@ -200,6 +251,25 @@ class Game{
     }
     applyStartPack(){
       this.TimerChooseAnimation.kill();
+      
+      let textGeometry = new THREE.TextBufferGeometry( 
+`Завершить
+    ход`, 
+          {
+              font: this.font,
+              size: 0.5,
+              height: 0,
+              curveSegments: 12,
+              bevelEnabled: false,
+          } 
+      );
+      textGeometry.computeBoundingBox(); 
+      textGeometry.translate( - 0.5 * ( textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x), 0, 0 );
+      this.endRoundButton = new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({color:0xFFFFFF}));
+      this.scene.add(this.endRoundButton);
+      this.endRoundButton.position.set(-16,32,-6);
+      this.endRoundButton.visible = false;
+      this.endRoundButton.lookAt(this.camera.position);
       TweenMax.to(this.groupOf3Cards.children[0].material,1,{opacity:0,onComplete:()=>{
         this.groupOf3Cards.remove(this.groupOf3Cards.children[0]);
         this.groupOf3Cards.remove(this.groupOf3Cards.children[0]);
