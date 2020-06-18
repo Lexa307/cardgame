@@ -6,6 +6,7 @@ class Room{
         this.socket1 = socket1;
         this.socket2 = socket2;
 
+        this.gold1 = this.gold2 = 10;
         this.timer = null; 
 
         //Карты в колоде у игроков
@@ -36,6 +37,9 @@ class Room{
                 this.colodCards2 = [...result2];
                 this.io.to(this.socket1.id).emit("cardResLoad",[result1,result2]);
                 this.io.to(this.socket2.id).emit("cardResLoad",[result2,result1]);
+
+                
+                
                 this.readyAwait();
             });
         });
@@ -52,6 +56,8 @@ class Room{
             if(readyFlag >= 2){
                 console.log("loading ready");
                 clearInterval(this.timer);
+                this.io.to(this.socket1.id).emit("sendEnemy",this.socket2.request.session.nickname);
+                this.io.to(this.socket2.id).emit("sendEnemy",this.socket1.request.session.nickname);
                 this.chooseAwait();
             }
         }, 500);
@@ -59,6 +65,14 @@ class Room{
     chooseAwait(){
         this.io.to(this.roomName).emit("ChooseCard");
         let readyFlag = 0;
+        this.socket1.on('ChoosenCards',(msg)=>{
+            this.sleeveCards1 = [...msg];
+            readyFlag++;
+        })
+        this.socket2.on('ChoosenCards',(msg)=>{
+            this.sleeveCards2 = [...msg];
+            readyFlag++;
+        })
         this.timer = setInterval(() => {
             if(readyFlag >= 2){
                 console.log("cards choosen");
@@ -69,7 +83,11 @@ class Room{
     }
 
     startGame(){
-        
+        this.updateGold();
+    }
+    updateGold(){
+        this.io.to(this.socket1.id).emit("updateGold",this.gold1);
+        this.io.to(this.socket2.id).emit("updateGold",this.gold2);
     }
 
     endGame(socket){//send looser

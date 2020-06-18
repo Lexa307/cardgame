@@ -40,6 +40,28 @@ class Game{
           removeGame();
         
         },this))
+        socket.on('updateGold',bind((msg)=>{
+          this.updateGold(msg);
+        },this));
+        socket.on('sendEnemy',bind((msg)=>{
+          this.enemyName = msg;
+          let EnemyNick = new THREE.TextBufferGeometry( this.enemyName, 
+            {
+                font: this.font,
+                size: 2,
+                height: 1,
+                curveSegments: 12,
+                bevelEnabled: false,
+            }
+            
+            );
+            EnemyNick.computeBoundingBox(); 
+            EnemyNick.translate( - 0.5 * ( EnemyNick.boundingBox.max.x - EnemyNick.boundingBox.min.x), 0, 0 );
+            this.EnemyNickMesh = new THREE.Mesh(EnemyNick,new THREE.MeshBasicMaterial({color:0xFF0000}));
+            this.scene.add(this.EnemyNickMesh);
+            this.EnemyNickMesh.position.set(-30,  30,  10);
+            this.EnemyNickMesh.lookAt(this.camera.position);
+        },this))
         this.firstCards = [];
         socket.on('ChooseCard',bind(()=>{
           console.log("chosing begining");
@@ -62,6 +84,29 @@ class Game{
         this.renderer.render( this.scene, this.camera );
         this.raycaster.setFromCamera( this.mouse, this.camera );
         var intersects = this.raycaster.intersectObjects( this.scene.children );     
+    }
+    updateGold(count){
+      if(this.goldMesh){
+        this.scene.remove(this.goldMesh);
+      }
+      this.goldCount = count;
+      let textGeometry = new THREE.TextBufferGeometry( `${this.goldCount}`, 
+          {
+              font: this.font,
+              size: 1,
+              height: 0,
+              curveSegments: 12,
+              bevelEnabled: false,
+          } 
+      );
+      textGeometry.computeBoundingBox(); 
+      textGeometry.translate( - 0.5 * ( textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x), 0, 0 );
+  
+      this.goldMesh = new THREE.Mesh(textGeometry,new THREE.MeshBasicMaterial({color:0xFFD700})); 
+      this.scene.add(this.goldMesh);
+      this.goldMesh.position.set(8.5,21,2.5);
+      this.goldMesh.rotation.set(Math.PI,Math.PI/2,Math.PI);
+      // this.goldMesh.lookAt(a.camera.position);
     }
 
 
@@ -113,7 +158,7 @@ class Game{
       ok.style.top = "90%";
       ok.innerText = "Готово";
       document.body.appendChild(ok);
-
+      ok.addEventListener( 'click', bind(this.applyStartPack,this), false );
       let repick = document.createElement("div");
       repick.style.position = "absolute";
       repick.id = "repick";
@@ -122,7 +167,16 @@ class Game{
       repick.style.top = "90%";
       repick.innerText = "Перевыбрать";
       document.body.appendChild(repick);
+      repick.addEventListener( 'click', bind(this.repickStartCards,this), false );
 
+      let TimerGeometry = new THREE.BoxBufferGeometry( 1, 0.3, 10 );
+      let TimerMaterial = new THREE.MeshBasicMaterial( {color: 0x156289} );
+      this.TimerMesh = new THREE.Mesh( TimerGeometry, TimerMaterial );
+      this.groupOf3Cards.add( this.TimerMesh );
+      this.TimerMesh.position.set(1,5,2.5);
+      this.TimerChooseAnimation = TweenMax.to(this.TimerMesh.scale,60,{z:0.001,onComplete:()=>{
+        this.applyStartPack();
+      }});
 
 
       }
@@ -139,13 +193,15 @@ class Game{
         this.groupOf3Cards.position.x = 2.6;
 
       }
-      this.groupOf3Cards.children[2].children[1].position.x += 0.05;
-      this.groupOf3Cards.children[2].children[2].position.x += 0.05;
-      this.groupOf3Cards.children[4].children[1].position.x -= 0.1;
-      this.groupOf3Cards.children[4].children[2].position.x -= 0.1;
+      this.groupOf3Cards.children[3].children[1].position.x += 0.05;
+      this.groupOf3Cards.children[3].children[2].position.x += 0.05;
+      this.groupOf3Cards.children[5].children[1].position.x -= 0.1;
+      this.groupOf3Cards.children[5].children[2].position.x -= 0.1;
     }
     applyStartPack(){
+      this.TimerChooseAnimation.kill();
       TweenMax.to(this.groupOf3Cards.children[0].material,1,{opacity:0,onComplete:()=>{
+        this.groupOf3Cards.remove(this.groupOf3Cards.children[0]);
         this.groupOf3Cards.remove(this.groupOf3Cards.children[0]);
         this.groupOf3Cards.remove(this.groupOf3Cards.children[0]);
         document.getElementById("ok").remove();
@@ -153,6 +209,7 @@ class Game{
         for(let i = 0; i < this.groupOf3Cards.children.length; i++){
           TweenMax.to(this.groupOf3Cards.children[i].position,1,{x:1.9,y:-2})
         }
+        socket.emit('ChoosenCards',[this.groupOf3Cards.children[0].info,this.groupOf3Cards.children[1].info,this.groupOf3Cards.children[2].info]);
         
       }})
     }
@@ -258,6 +315,7 @@ class Game{
                           loadCounter--;
                         },this));  
                       }
+                      
                     },this))
                   },this))
 
