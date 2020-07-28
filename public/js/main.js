@@ -249,9 +249,12 @@ class Game{
       this.groupOf3Cards.children[5].children[1].position.x -= 0.1;
       this.groupOf3Cards.children[5].children[2].position.x -= 0.1;
     }
+  
     applyStartPack(){
       this.TimerChooseAnimation.kill();
-      
+      this.areaFriendly = new THREE.Mesh(new THREE.BoxBufferGeometry(10,1,50),new THREE.MeshBasicMaterial({color:0x156289,transparent:true,opacity:0.5}));
+      this.scene.add(this.areaFriendly);
+      this.areaFriendly.position.set(-7,20,26);
       let textGeometry = new THREE.TextBufferGeometry( 
 `Завершить
     ход`, 
