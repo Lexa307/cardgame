@@ -18,7 +18,7 @@ var options = {
 
 const connection = mysql.createConnection(options);
 var MySQLStore = require('express-mysql-session')(session);
-
+module.exports = connection;
  
 var sessionStore = new MySQLStore({
     expiration: 10800000,
@@ -51,36 +51,23 @@ io.use(function(socket, next) {
 app.use(sessionMiddleware);
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
-
-
 app.use(express.static('./public/'));
-app.use(require('./routes'));
-
-
-
+app.use(express.json());
+app.use(require('./routes/index.js'));
 app.get('/', function(request, response) {
 	response.redirect(`/auth`);
 });
 
-app.post('/auth',function(request,response){
-	authUser(request,response);
-});
 app.post('/exit',(req,res)=>{
 	req.session.destroy(() => {
 		res.clearCookie('session_cookie_name', {path: '/home'});
 		res.redirect('/');
 	  });
 });
-
-app.post('/reg', function(request, response) {
-	registerUser(request,response);
-});
-
 app.use((req,res,next) => {
+    console.log(path.join(__dirname + '/public/404.html'));
     res.status(404).sendFile(path.join(__dirname + '/public/404.html'));
 });
-
-
 
 function cancelSearching(socket){
 	if (socket.searching){ //если пользователь внезапно закроет вкладку при поиске
@@ -166,8 +153,6 @@ io.on('connection', (socket)=>{
 	});
 });
 
-
-
 function searchingHandle(){
 	let timerId = setInterval(()=>{
 		if(searching.length >= 2){
@@ -181,123 +166,6 @@ function searchingHandle(){
 	},100);
 }
 
-function registerUser(request,response){
-	let nickname = request.body.nickname;
-	let mail = request.body.mail;
-	//to do: form validation on server side!
-	let r = /[^A-Z-a-z-0-9]/;
-	if(r.test(nickname)){
-		response.json({message:" В никнейме должны быть только латинские буквы и цифры"});
-		response.end();
-		return;
-	}
-	if(r.test(request.body.password)){
-		response.json({message:" В пароле введены недопустимые символы. Разрешены латинские буквы и цифры"});
-		response.end();
-		return;
-	}
-	connection.query(`SELECT * FROM accounts WHERE email = '${mail}';`,(err,results)=>{
-		if (results.length > 0) {
-			response.json({message:'Введенная почта уже зарегистрирована'});
-			response.end();
-			return;
-		} else {
-			connection.query(`SELECT * FROM accounts WHERE username = '${nickname}';`,(err,results)=>{
-				if (results.length > 0) {
-					response.json({message:'Этот никнейм уже используется'});
-					response.end();
-					return;
-				} else {
-						argon2.hash(request.body.password).then(hash =>{
-							connection.query(`INSERT INTO accounts (username, password, email, gold,rank_points,matches, matches_win) VALUES ('${nickname}', '${hash}', '${mail}', '0','0','0','0');`,(err,results)=>{
-								connection.query(`select id from accounts where email = '${mail}'`,(err,res)=>{
-									let userid = res[0].id;
-									//console.log(`user: ${userid}`);
-									connection.query(`SELECT card_id from card where pack_id = 1`,
-									(err,result)=>{
-										//console.log(result)
-										let cards = result;
-										let queryStringInsertCards = `INSERT INTO deck(user_id, card_id, pos) values `;
-										for(let i = 0 ; i < cards.length; i++ ){
-											queryStringInsertCards+=`(${userid},${cards[i].card_id},${i}),`;
-										}
-										queryStringInsertCards = queryStringInsertCards.substr(0,queryStringInsertCards.length-1);
-										queryStringInsertCards+=`;`;
-										//console.log(queryStringInsertCards);
-
-										connection.query(queryStringInsertCards,
-											(err,result)=>{
-												request.session.loggedin = true;
-												request.session.mail = mail;
-												request.session.nickname = nickname;
-												request.session.gold = 0;
-												request.session.playerId = userid;
-												response.redirect('/home');
-											});
-									
-									});
-									
-									
-
-								});
-								
-							});
-						});
-				}
-			}
-		);}
-	});
-}
-function authUser(request,response){
-	var mail = request.body.mail;
-	var password = request.body.password;
-	let r = /[^A-Z-a-z-0-9]/;
-	if(r.test(request.body.password)){
-		response.json({message:" В пароле введены недопустимые символы. Разрешены латинские буквы и цифры"});
-		response.end();
-		return;
-	}
-	if (mail && password) {
-
-			connection.query(`SELECT * FROM accounts WHERE email = '${mail}';` , (err,results)=> {
-				if (results.length > 0) {
-					try {
-						argon2.verify(results[0].password, password).then(answer =>{
-							if(answer){
-								
-								request.session.loggedin = true;
-								request.session.mail = mail;
-								request.session.nickname = results[0].username;
-								request.session.gold = results[0].gold;
-								request.session.playerId = results[0].id;
-								response.redirect('/home');
-							} else {
-								// password did not match
-								response.json({message:'Неправильный пользователь или пароль'});
-								response.end();
-							  }
-						}); 
-							
-						 
-					  } catch (error) {
-						// internal failure
-						response.json({message:'Ошибка сервера!'});
-						response.end();
-					  }
-
-					
-				} else {
-					response.json({message:'Неправильный пользователь или пароль'});
-					response.end();
-				}			
-			});
-	
-		
-			} else {
-		response.json({message:'Пожалуйста введите почту и пароль!'});
-		response.end();
-	}
-}
 searchingHandle();
 
 

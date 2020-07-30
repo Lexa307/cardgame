@@ -41,15 +41,15 @@ function submitForm(){
     xhr.open("POST",'/reg',true);
     xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
     xhr.onreadystatechange = ()=>{
-        if(xhr.readyState!= 4) return;
+        if(xhr.readyState!= 4) return false;
         if(xhr.status == 200){
             let response; 
             try{response= JSON.parse(`${xhr.responseText}`);} catch(err){
-                window.location.href = "/home";
+               window.location.href = "/home";
             }
             console.log(response);
             if(response.message == undefined){
-                window.location.href = "/home";
+               window.location.href = "/home";
             }else{
                 err.innerText = response.message;
                 err.style.visibility = "visible";

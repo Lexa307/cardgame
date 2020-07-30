@@ -1,10 +1,9 @@
 const  express = require('express')
-const session = require('express-session');
+// const session = require('express-session');
 const path = require('path');
-const router = express.Router(); 
-router.get('/', function(request, response) {
-    
-
+const router = express.Router();
+router.route('/home') 
+.get(function(request, response) {
 	if(request.session.loggedin == undefined){
 		response.redirect('/auth');
 	}else{

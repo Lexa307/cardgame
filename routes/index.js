@@ -1,9 +1,12 @@
 const  express = require('express')
 const router = express.Router(); 
-// router.route('/auth').post((req,res)=>{
-//     res.redirect('/auth');
-// })
-router.use('/auth',require('./auth.js'));
-router.use('/reg',require('./reg.js'));
-router.use('/home',require('./home.js'))
+const path = require('path');
+router.use(function(req,res,next){
+    console.log(req.url,"@",Date.now());
+    next();
+});
+router.use(require('./auth.js'));
+router.use(require('./reg.js'));
+router.use(require('./home.js'));
+
 module.exports = router;
