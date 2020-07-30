@@ -1,16 +1,16 @@
-var socket = io();
-let a = null;
-document.getElementById("SearhButton").addEventListener('click',findGame,false);
-document.getElementById("cancel").addEventListener('click',canselSearch,false);
-document.getElementById("exit").addEventListener('click',exitFromSystem,false);
+import * as THREE from '../lib/three.module.js';
+import { GLTFLoader } from '../lib/GLTFLoader.js';
+import SocketClientWorker from './socket.js';
 
-socket.emit("getAccData");
+function bind(func, context) {
+	return function() {
+	  return func.apply(context, arguments);
+	};
+}
 
-let searvherTimer = null;
-  
-class Game{
+export default class Game{
 
-    constructor(cards,selector){
+    constructor(cards,reference,selector){
         
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x3F3683);
@@ -30,23 +30,23 @@ class Game{
         this.renderer.setSize( window.innerWidth, (window.innerHeight) );//(window.innerWidth/1.77)
         document.body.appendChild( this.renderer.domElement );
         this.requestId = undefined;
-        socket.on('closeGame',bind((msg)=>{
+        SocketClientWorker.socket.on('closeGame',bind((msg)=>{
           window.cancelAnimationFrame(this.requestId);
           this.renderer.domElement.remove();
           document.getElementById('wrapper').style.display = 'block';
-          socket.off('closeGame');
+          SocketClientWorker.socket.off('closeGame');
           document.getElementById('serchPanel').innerHTML = `<h1>Поиск игроков...</h1>
           <input type="submit" value="Отмена" id = "cancel" >`;
-          removeGame();
+          this.removeGame(reference);
         
         },this))
-        socket.on('updateGold',bind((msg)=>{
+        SocketClientWorker.socket.on('updateGold',bind((msg)=>{
           this.updateGold(msg);
         },this));
-        socket.on('round',bind((msg)=>{
+        SocketClientWorker.socket.on('round',bind((msg)=>{
           this.updateRound(msg);
         },this))
-        socket.on('sendEnemy',bind((msg)=>{
+        SocketClientWorker.socket.on('sendEnemy',bind((msg)=>{
           this.enemyName = msg;
           let EnemyNick = new THREE.TextBufferGeometry( this.enemyName, 
             {
@@ -66,7 +66,7 @@ class Game{
             this.EnemyNickMesh.lookAt(this.camera.position);
         },this))
         this.firstCards = [];
-        socket.on('ChooseCard',bind(()=>{
+        SocketClientWorker.socket.on('ChooseCard',bind(()=>{
           console.log("chosing begining");
           this.repickStartCards();
         },this));
@@ -79,6 +79,11 @@ class Game{
 
         this.renderer.setSize( window.innerWidth, window.innerHeight );
 
+    }
+    removeGame(ref){
+      ref= null;
+      document.getElementById('accInfo').style.display = "block";
+      SocketClientWorker.socket.emit("getAccData");
     }
 
     animate () {
@@ -282,7 +287,7 @@ class Game{
         for(let i = 0; i < this.groupOf3Cards.children.length; i++){
           TweenMax.to(this.groupOf3Cards.children[i].position,1,{x:1.9,y:-2})
         }
-        socket.emit('ChoosenCards',[this.groupOf3Cards.children[0].info,this.groupOf3Cards.children[1].info,this.groupOf3Cards.children[2].info]);
+        SocketClientWorker.socket.emit('ChoosenCards',[this.groupOf3Cards.children[0].info,this.groupOf3Cards.children[1].info,this.groupOf3Cards.children[2].info]);
         
       }})
     }
@@ -359,7 +364,7 @@ class Game{
         this.scene.add( ambientLight );
         this.light = new THREE.PointLight();
         this.scene.add(this.light);
-        var loader = new THREE.GLTFLoader().setPath( 'models/' );
+        var loader = new GLTFLoader().setPath( 'models/' );
             loader.load( 'field/field.glb', bind( function ( gltf ) {
                 this.scene.add( gltf.scene );
                 this.fscene = gltf.scene;
@@ -394,7 +399,7 @@ class Game{
 
                   let awaitLoadingTimer = setInterval(()=>{
                     if(loadCounter == 0){
-                      socket.emit("loadingReady");
+                      SocketClientWorker.socket.emit("loadingReady");
                       clearInterval(awaitLoadingTimer);
                     }
                   },100)
@@ -407,58 +412,4 @@ class Game{
             },this)
             );
       }
-}
-
-function findGame () {
-  socket.emit('searching', 'username');
-  document.getElementById('wrapper').style.display = 'none';
-  document.getElementById('serchPanel').style.display = 'block';
-}
-
-function canselSearch(){
-  socket.emit('cancelSearch');
-  document.getElementById('wrapper').style.display = 'block';
-  document.getElementById('serchPanel').style.display = 'none';
-}
-socket.on("cardResLoad",(msg)=>{
-  console.log(msg);
-  setTimeout(()=>{a = new Game(msg);},5000)
-  
-
-})
-socket.on("gameFounded",(msg)=>{
-  document.getElementById('serchPanel').innerHTML = `<h1>Игра найдена!</h1> <br> Запуск матча...`
-})
-socket.on("accData",(msg)=>{
-  document.getElementById('accInfo').innerText = 
-`${msg.nickname}
-боев:${msg.battles}
-побед:${msg.win}
-ранг:${msg.rank}
-золота:${msg.gold}`
-})
-
-function exitFromSystem(){
-  var xhr = new XMLHttpRequest();
-  var body = ''
-  xhr.open("POST", '/exit', true);
-  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  xhr.onreadystatechange = ()=>{
-    console.log(xhr);
-    window.location.reload();
-  }
-  xhr.send(body);
-  
-  
-}
-
-function bind(func, context) {
-	return function() {
-	  return func.apply(context, arguments);
-	};
-}
-function removeGame(){
-  delete a;
-  document.getElementById('accInfo').style.display = "block";
-  socket.emit("getAccData");
 }
