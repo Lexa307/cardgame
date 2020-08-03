@@ -1,11 +1,9 @@
 const  express = require('express')
-const session = require('express-session');
-const bodyParser = require('body-parser');
 const path = require('path');
 const argon2 = require('argon2');
 const router = express.Router();
 
-var connection = require('../index.js');
+var pool = require('../app.js');
 router.route('/auth')
 .get(function(request, response) {
 	console.log(`in auth reqr = ${request.session.loggedin}`);
@@ -31,7 +29,7 @@ function authUser(request,response){
 	}
 	if (mail && password) {
 
-			connection.query(`SELECT * FROM accounts WHERE email = '${mail}';` , (err,results)=> {
+			pool.query(`SELECT * FROM accounts WHERE email = '${mail}';` , (err,results)=> {
 				if (results.length > 0) {
 					try {
 						argon2.verify(results[0].password, password).then(answer =>{

@@ -7,18 +7,18 @@ const path = require('path');
 const argon2 = require('argon2');
 const mysql = require('mysql');
 const Room = require('./exports/Room.js');
-
+require('dotenv').config();
 var options = {
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: '1234',
-    database: 'carddb'
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+	database: process.env.DB_NAME,
+	connectionLimit:process.env.DB_CONNECTION_LIMIT
 };
-
-const connection = mysql.createConnection(options);
+const pool = mysql.createPool(options);
 var MySQLStore = require('express-mysql-session')(session);
-module.exports = connection;
+module.exports = pool;
  
 var sessionStore = new MySQLStore({
     expiration: 10800000,
@@ -31,7 +31,7 @@ var sessionStore = new MySQLStore({
             data: 'data'
         }
     }
-}, connection);
+}, pool);
 app.use(cookieParser());
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
@@ -39,7 +39,7 @@ const searching =  [];
 const rooms = [];
 var sessionMiddleware = session({
 	key: 'session_cookie_name',
-	secret: 'secret',
+	secret: process.env.SECRET_KEY,
 	resave: false,
 	store: sessionStore,
     saveUninitialized: true,
@@ -111,7 +111,7 @@ io.on('connection', (socket)=>{
 	});
 
 	socket.on("getAccData",()=>{
-		connection.query(`SELECT * from accounts where id = ${socket.userId} ;`,(err,res)=>{
+		pool.query(`SELECT * from accounts where id = ${socket.userId} ;`,(err,res)=>{
 			if(res[0].rank == null){
 				io.to(socket.id).emit("accData",
 				{
@@ -122,7 +122,7 @@ io.on('connection', (socket)=>{
 					battles:res[0].matches
 				});
 			}else{
-				connection.query(`SELECT rank_name from ranks where rank_id = ${res[0].rank}`,(err,result)=>{
+				pool.query(`SELECT rank_name from ranks where rank_id = ${res[0].rank}`,(err,result)=>{
 					console.log(res);
 					io.to(socket.id).emit("accData",
 					{
@@ -157,7 +157,7 @@ function searchingHandle(){
 	let timerId = setInterval(()=>{
 		if(searching.length >= 2){
 			let players = searching.splice(0,2);
-			rooms.push(new Room(io,connection,`room ${rooms.length+1}`,players[0],players[1]));			
+			rooms.push(new Room(io,pool,`room ${rooms.length+1}`,players[0],players[1]));			
 			io.to(`room ${rooms.length}`).emit('gameFounded');//test
 
         }
