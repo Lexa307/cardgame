@@ -10,7 +10,8 @@ SocketClientWorker.socket.on("cardResLoad",(msg)=>{
   setTimeout(()=>{a = new Game(msg,a);},1000)
 });
 SocketClientWorker.socket.on("gameFounded",(msg)=>{
-  document.getElementById('serchPanel').innerHTML = `<h1>Игра найдена!</h1> <br> Запуск матча...`
+  document.getElementById('cancel_field').remove();
+  document.getElementById('search_status_text').innerText = `Игра найдена!\nЗапуск матча...`
 });
 SocketClientWorker.socket.on("accData",(msg)=>{
   document.getElementById('accInfo').innerText = 

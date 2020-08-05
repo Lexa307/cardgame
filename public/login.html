@@ -6,29 +6,36 @@
 		<meta http-equiv="X-UA-Compatible" content="ie=edge">
 		<link rel="stylesheet" href="css/style.css">
 		<title>Вход </title>
-		
 	</head>
 	<body>
     <div class="wrapper">
 		  <div class="title">
 			<h1>War Of Imperium</h1>
 		  </div>
-		  <div class="login-form">
-			  <h1>Вход</h1>
-			  <form  id = "form" onsubmit="let h = submitForm(); console.log(h); return h;">
-          <label for="mail">Почта</label>
-          <input type="text" name="mail" required id = "mail">
-          <label for="password">Пароль</label>
-		  <input type="password" name="password" required id = "password">
-		  <div class="err" id="err">
-			Неправильный логин или пароль, пожалуйста повторите попытку. 
-		</div>
-		  <input type="submit" value="Войти" id = "sub">
-		</form>
-        <a href="register.html">
-          <input type="submit" value="Регистрация">
-        </a>
-      </div>
+		  <div class="page_func_name">
+			<h1>Вход</h1>
+		  </div>
+			<form  class = "form" id = "form" onsubmit="return submitForm();">
+				<div class="inputfield">
+					<label for="mail">Почта</label>
+					<input type="text" name="mail" required id = "mail" class="input">
+				</div>
+				<div class="inputfield">
+					<label for="password">Пароль</label>
+					<input type="password" name="password" required id = "password" class="input">					
+				</div>
+				<div class="err" id="err">
+					Неправильный логин или пароль. 
+				</div>
+				<div class="inputfield">
+					<input type="submit" value="Войти" id = "sub" class="btn" >
+				</div>
+				<div class="inputfield" >
+					<a href="/reg" class="link">
+						<div class="btn">Регистрация</div>
+					</a>
+				</div>
+			</form>
 	</div>
 	<script src="./js/login.js"></script>
 	</body>

@@ -2,24 +2,11 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
 		<link rel="stylesheet" href="css/style.css">
-		<title>Login </title>
+		<title>Меню</title>
 		<style>
-		body, html {
-			/* position: absolute;
-			top: 0px;
-			left: 0px; */
-			height: 100%;
-			width: 100%;
-			margin: 0 0 0 0;
-			padding: 0 0 0 0;
-        }
-		.login-form {
-			width: 90%;
-			height: 90%;
-			margin: 0 auto;
-		}
 		.searcher{
 			position: relative;
 			max-width: 30vw;
@@ -33,6 +20,27 @@
 			height: 30vh;
 			display: none;
 		}
+		.searcher .inputfield.inputfield .btn{
+			width: 100%;
+			padding: 8px 10px;
+			font-size: 15px; 
+			border: 0px;
+			text-align: center;
+			background:  #fec107;
+			color: #000;
+			cursor: pointer;
+			border-radius: 3px;
+			outline: none;
+		   }
+		.searcher .page_func_name{
+			text-align: center;
+			color: #fff;
+		}
+		.searcher .form .inputfield .btn:focus,
+		.searcher .form .inputfield .btn:hover{
+			background: #ffffff;
+			color: black;
+		 }
 		.accblock{
 			position: absolute;
 			top:0px;
@@ -40,46 +48,40 @@
 			border: 2px solid black;
 			color: white;
 		}
-		.searcher input[type="submit"]{
-			margin-top: 1vh;
-			font-family: Roboto;
-			font-style: normal;
-			font-weight: normal;
-			font-size: 28px;
-			line-height: 33px;
-			margin: 0 auto;
-			display: flex;
-		}
-		.searcher h1 {
-			text-align: center;
-			color: #FFFFFF;
-			font-family: Fenix;
-			font-style: normal;
-			font-weight: normal;
-			font-size: 50px;
-			line-height: 56px;
-        /* padding: 0 0 0 0; */
-		}
-
 		</style>
 	</head>
-	
 	<body>
     <div class="wrapper" id = "wrapper" >
 		<div class="title">
 			<h1>War Of Imperium</h1>
-		  </div>
-		  <div class="login-form">
-			<h1>Меню</h1>			  
-			<input type="submit" value="Поиск игры" id = "SearhButton" >
-			<input type="submit" value="Колода" id = "colod" >
-			<input type="submit" value="Наборы" id = "packs" >
-			<input type="submit" value="Выйти из системы" id = "exit" >  
-      </div>
+		</div>
+		<div class="page_func_name">
+			<h1>Меню</h1>	
+		</div>
+		<div class="form">
+			<div class="inputfield">
+				<input type="submit" value="Поиск игры" id = "SearhButton" class="btn" >
+			</div>
+			<div class="inputfield">
+				<input type="submit" value="Колода" id = "colod" class="btn">
+			</div>
+			<div class="inputfield">
+				<input type="submit" value="Наборы" id = "packs" class="btn">
+			</div>
+			<div class="inputfield">
+				<input type="submit" value="Выйти из системы" id = "exit" class="btn">
+			</div>		   
+		</div>
 	</div>
 	<div class="searcher" id = "serchPanel">
-		<h1>Поиск игроков...</h1>
-		<input type="submit" value="Отмена" id = "cancel" >
+		<div class="form">
+			<div class="page_func_name" id="search_status">
+				<h1 id="search_status_text">Поиск игроков...</h1>
+			</div>
+			<div class="inputfield" id="cancel_field">
+				<input type="submit" value="Отмена" id = "cancel" class="btn">
+			</div>
+		</div>
 	</div>
 	<div class="accblock" id = "accInfo"></div>
 	<script src="js/lib/socket.io.js"></script>

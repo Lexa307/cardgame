@@ -1,24 +1,19 @@
-
-
-
-
-@font-face {
+/* @font-face {
     font-family: 'Fenix';
     font-style: normal;
     font-weight: 400;
     src: local('Fenix'), local('Fenix-Regular'),
-         url('../fonts/fenix-v7-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-         url('../fonts/fenix-v7-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+         url('../fonts/fenix-v7-latin-regular.woff2') format('woff2'), 
+         url('../fonts/fenix-v7-latin-regular.woff') format('woff'); 
   }
-/* roboto-regular - latin */
 @font-face {
     font-family: 'Roboto';
     font-style: normal;
     font-weight: 400;
     src: local('Roboto'), local('Roboto-Regular'),
-         url('../fonts/roboto-v20-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-         url('../fonts/roboto-v20-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
-  }
+         url('../fonts/roboto-v20-latin-regular.woff2') format('woff2'), 
+         url('../fonts/roboto-v20-latin-regular.woff') format('woff'); 
+  } */
 	/* milonga-regular - latin */
 @font-face {
 	  font-family: 'Milonga';
@@ -31,140 +26,92 @@
 		   url('../fonts/milonga-v7-latin-regular.woff') format('woff'), /* Modern Browsers */
 		   url('../fonts/milonga-v7-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
 		   url('../fonts/milonga-v7-latin-regular.svg#Milonga') format('svg'); /* Legacy iOS */
-	}
-html{
+    }
+*{
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-}
-*,*::before, *::after{
-    box-sizing: inherit;
+    font-family: 'Milonga';
 }
 body{
     background: url("../images/floating-castle-ragnarok-online-anime-games-clouds-scenic-valley\ 1.png") no-repeat;
     background-size: cover;
     padding-top: 1%;
-  }
-  .wrapper{
-max-width: 30vw;
-background: rgba(4, 4, 4, 0.61);
-border-radius: 40px;
-margin: 0 auto;
-display: flex;
-flex-direction: column;
-max-height: 99vh;
-height: 96vh;
 }
-.wrapper h1 {
-    margin-top: 3vh;
-    margin-bottom: 3vh;
-}
-.notfound{
-    
-    width: 40%;
-    height: 60%;
+.wrapper{
+    max-width: 400px;
+    width: 100%;
     background: rgba(4, 4, 4, 0.61);
-    margin: 0 auto;
-    min-height: 50%;
+    border-radius: 40px;
+    margin: 20px auto;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.125);
+    padding: 30px;
+}
+.wrapper .page_func_name,
+.wrapper .title{
+    margin-bottom: 25px;
+    text-align: center;
+    color: #ffffff;
+}
+.wrapper .form .inputfield{
+    margin-bottom: 15px;
+    display: flex;
     align-items: center;
-    vertical-align: middle;
-    color: #FFFFFF;
-    padding-left: 0;
 }
-.notfound h1{
+.wrapper .form .inputfield label{
+    width: 100px;
+    color: #ffffff;
+    margin-right: 10px;
+   font-size: 14px;
+ }
+ .wrapper .form .inputfield .input{
+    width: 100%;
+    outline: none;
+    border: 1px solid #d5dbd9;
+    font-size: 15px;
+    padding: 8px 10px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+ }
+ .wrapper .form .link{
+    width: 100%;
+ }
+ .wrapper .form .inputfield .btn{
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 15px; 
+    border: 0px;
     text-align: center;
-
+    background:  #fec107;
+    color: #000;
+    cursor: pointer;
+    border-radius: 3px;
+    outline: none;
+  }
+.wrapper .form .inputfield .btn:hover,
+.wrapper .form .inputfield .btn:focus{
+    background: #ffffff;
+    color: black;
 }
-.notfound h3{
-    text-align: center;
+.wrapper .form .inputfield .input:focus{
+    border: 1px solid #fec107;
+ }
+ .page_func_name{
+    align-items: center;
+ }
+.err{
+    font-size: 24px;
+    line-height: 28px;
+    visibility: hidden;
+    color:#fec107;
+    max-width: 431px;
 }
-
-.wrapper input[type="submit"]{
-     margin-top: 1vh;
-    font-family: Roboto;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 28px;
-    line-height: 33px;
-}
-	.title h1 {
-        text-align: center;
-        color: #FFFF00;
-        font-family: 'Milonga';
-        font-style: normal;
-        font-weight: normal;
-        font-size: 60px;
-        line-height: 56px;
-        /* padding: 5% 0 0 0; */
+@media (max-width:420px) {
+    .wrapper .form .inputfield{
+      flex-direction: column;
+      align-items: flex-start;
     }
-
-    .login-form {
-        max-width: 23hw;
-        max-height: 40hv;
-        margin: 0 auto;
-        /* padding-bottom: 5vh; */
+    .wrapper .form .inputfield label{
+      margin-bottom: 5px;
     }
-
-    .login-form h1 {
-        text-align: center;
-        color: #FFFFFF;
-        font-family: Fenix;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 50px;
-        line-height: 56px;
-        /* padding: 0 0 0 0; */
-    }
-    .login-form input[type="password"],
-    .login-form input[type="text"],
-    .login-form input[type="email"] {
-        width: 100%;
-        padding: 2%;
-        background: #C4C4C4;
-        margin-bottom: 5vh;
-        box-sizing:border-box;
-        border-radius: 5px;
-    }
-    .login-form input[type="submit"] {
-        width: 100%;
-        padding: 20hv;
-        margin-bottom: 2%;
-        background-color: #FDE910;
-        border: 1px solid #000000;
-        box-sizing: border-box;
-        cursor: pointer;
-        font-family: Roboto;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 28px;
-        line-height: 33px;
-        color: #000000;
-    }
-    .login-form label{
-        color: #E2E2E2 ;
-        font-family: Roboto;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 24px;
-        line-height: 28px;
-    }
-    /* @media (max-width:1200px){
-        .wrapper{
-            max-width: 429px;
-            height: 60%;
-        }
-        .login-form {
-            max-width: 342px;
-            max-height: 600px;
-        }
-    } */
-    .err{
-        font-family: Arial, Helvetica, sans-serif;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 24px;
-        line-height: 28px;
-        visibility: hidden;
-        /* -webkit-text-stroke-width: 0.5px;
-        -webkit-text-stroke-color: #000; */
-        color: rgba(255, 255, 0, 1);
-        max-width: 431px;
-    }
+  }
