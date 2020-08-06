@@ -1,9 +1,7 @@
 const  express = require('express')
-const path = require('path');
 const argon2 = require('argon2');
 const router = express.Router();
-
-var pool = require('../app.js');
+const pool = require('../app.js').pool;
 router.route('/auth')
 .get(function(request, response) {
 	console.log(`in auth reqr = ${request.session.loggedin}`);
@@ -11,7 +9,7 @@ router.route('/auth')
 		response.redirect('/home')
 	}else{
 		console.log('send login');
-		response.sendFile(path.dirname(__dirname) + '/public/login.html');
+		response.render('login');
 	}
 })
 .post(function(request,response){

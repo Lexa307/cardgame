@@ -72,11 +72,11 @@ CREATE TABLE IF NOT EXISTS `deck` (
 )ENGINE = InnoDB CHARSET=utf8;
 CREATE INDEX fk_users_id ON deck (user_id);
 
-
-insert into ranks (`rank_name`,`condition`)values('бронза',10);
-insert into ranks (`rank_name`,`condition`)values('серебро',50);
-INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ('test1', '$argon2i$v=19$m=4096,t=3,p=1$MRXhyCnqT/uotFQe/L2emg$3fFNvc5GOLM0zdNo2wlBx6AYGyGRfuSTXxQ6T2QzdeU', 'test1@test.ru', 5000, 0, 1, 0, 0);
-INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ( 'test2', '$argon2i$v=19$m=4096,t=3,p=1$MRXhyCnqT/uotFQe/L2emg$3fFNvc5GOLM0zdNo2wlBx6AYGyGRfuSTXxQ6T2QzdeU', 'test2@test.ru', 5000, 0, 1, 0, 0);
+insert into ranks (`rank_name`,`condition`)values('Не откалиброван',0);
+insert into ranks (`rank_name`,`condition`)values('Бронза',10);
+insert into ranks (`rank_name`,`condition`)values('Серебро',50);
+-- INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ('test1', '$argon2i$v=19$m=4096,t=3,p=1$MRXhyCnqT/uotFQe/L2emg$3fFNvc5GOLM0zdNo2wlBx6AYGyGRfuSTXxQ6T2QzdeU', 'test1@test.ru', 5000, 0, 1, 0, 0);
+-- INSERT INTO `carddb`.`accounts` ( `username`, `password`, `email`, `gold`, `rank_points`, `rank`, `matches`, `matches_win`) VALUES ( 'test2', '$argon2i$v=19$m=4096,t=3,p=1$MRXhyCnqT/uotFQe/L2emg$3fFNvc5GOLM0zdNo2wlBx6AYGyGRfuSTXxQ6T2QzdeU', 'test2@test.ru', 5000, 0, 1, 0, 0);
 
 INSERT INTO `carddb`.`packs` (`pack_id`, `cost`, `name`, `pack_description`) VALUES (1, 0, 'StarterPuck', 'based pack for new players');
 INSERT INTO `carddb`.`logic` (`name`, `description`) VALUES ('test', 'for developer');

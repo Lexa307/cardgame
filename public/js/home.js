@@ -10,8 +10,9 @@ SocketClientWorker.socket.on("cardResLoad",(msg)=>{
   setTimeout(()=>{a = new Game(msg,a);},1000)
 });
 SocketClientWorker.socket.on("gameFounded",(msg)=>{
-  document.getElementById('cancel_field').remove();
+  document.getElementById('cancel_field').style.visibility = "hidden";
   document.getElementById('search_status_text').innerText = `Игра найдена!\nЗапуск матча...`
+  window.location.href('/game/'+msg);
 });
 SocketClientWorker.socket.on("accData",(msg)=>{
   document.getElementById('accInfo').innerText = 
@@ -37,6 +38,8 @@ function findGame(){
   SocketClientWorker.socket.emit('searching', 'username');
   document.getElementById('wrapper').style.display = 'none';
   document.getElementById('serchPanel').style.display = 'block';
+  document.getElementById('cancel_field').style.visibility = "visible";
+  document.getElementById('search_status_text').innerText = `Поиск игроков...`
 }
 function canselSearch(){
   SocketClientWorker.socket.emit('cancelSearch');

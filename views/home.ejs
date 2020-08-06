@@ -48,7 +48,12 @@
 			border: 2px solid black;
 			color: white;
 		}
-		</style>
+		.searcher .form{
+			align-items: center;
+			flex-direction: column;
+		}
+        </style>
+        <script>const USER_ID = "<%= userID %>"</script>
 	</head>
 	<body>
     <div class="wrapper" id = "wrapper" >
@@ -81,6 +86,7 @@
 			<div class="inputfield" id="cancel_field">
 				<input type="submit" value="Отмена" id = "cancel" class="btn">
 			</div>
+			<div class="s3"></div>
 		</div>
 	</div>
 	<div class="accblock" id = "accInfo"></div>

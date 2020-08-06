@@ -9,25 +9,20 @@ function bind(func, context) {
 }
 
 export default class Game{
-
-    constructor(cards,reference,selector){
-        
+    constructor(cards,reference){
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x3F3683);
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
-        this.renderer = selector ? (()=>{ return new THREE.WebGLRenderer( { canvas: selector, context: selector.getContext( 'webgl', { alpha: false,antialias:false } ) } );})()  : new THREE.WebGLRenderer()
-        this.camera = new THREE.PerspectiveCamera( 75, (window.innerWidth) / (window.innerWidth/1.77), 0.1, 60000 );
-        this.mobile = true;
-        }else{
         this.mobile = false;
-        this.renderer = selector ? (()=>{ return new THREE.WebGLRenderer( { canvas: selector, context: selector.getContext( 'webgl', { alpha: true,antialias:true } ) } );})()  : new THREE.WebGLRenderer({alpha: true,antialias:true})
-        this.camera = new THREE.PerspectiveCamera( 54, window.innerWidth / (window.innerHeight), 0.1, 60000 );
-        }
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) this.mobile = true;
+        this.renderer = new THREE.WebGLRenderer({alpha: !this.mobile, antialias:!this.mobile});
+        this.camera = new THREE.PerspectiveCamera( 54, (window.innerWidth/1.77) / (window.innerHeight/1.77), 0.1, 60000 );
         this.cards = cards;
         this.ourColodCardS = [];
         this.enemyColodCards = [];
         this.renderer.setPixelRatio( window.devicePixelRatio );
-        this.renderer.setSize( window.innerWidth, (window.innerHeight) );//(window.innerWidth/1.77)
+        this.renderer.setSize( window.innerWidth, window.innerHeight );//(window.innerWidth/1.77)
+        this.renderer.domElement.style.width = "100%";
+        this.renderer.domElement.style.height = "100%";
         document.body.appendChild( this.renderer.domElement );
         this.requestId = undefined;
         SocketClientWorker.socket.on('closeGame',bind((msg)=>{
@@ -35,10 +30,7 @@ export default class Game{
           this.renderer.domElement.remove();
           document.getElementById('wrapper').style.display = 'block';
           SocketClientWorker.socket.off('closeGame');
-          document.getElementById('serchPanel').innerHTML = `<h1>Поиск игроков...</h1>
-          <input type="submit" value="Отмена" id = "cancel" >`;
           this.removeGame(reference);
-        
         },this))
         SocketClientWorker.socket.on('updateGold',bind((msg)=>{
           this.updateGold(msg);
@@ -48,7 +40,7 @@ export default class Game{
         },this))
         SocketClientWorker.socket.on('sendEnemy',bind((msg)=>{
           this.enemyName = msg;
-          let EnemyNick = new THREE.TextBufferGeometry( this.enemyName, 
+          let EnemyNickGeometry = new THREE.TextBufferGeometry( this.enemyName, 
             {
                 font: this.font,
                 size: 2,
@@ -56,11 +48,10 @@ export default class Game{
                 curveSegments: 12,
                 bevelEnabled: false,
             }
-            
             );
-            EnemyNick.computeBoundingBox(); 
-            EnemyNick.translate( - 0.5 * ( EnemyNick.boundingBox.max.x - EnemyNick.boundingBox.min.x), 0, 0 );
-            this.EnemyNickMesh = new THREE.Mesh(EnemyNick,new THREE.MeshBasicMaterial({color:0xFF0000}));
+            EnemyNickGeometry.computeBoundingBox(); 
+            EnemyNickGeometry.translate( - 0.5 * ( EnemyNickGeometry.boundingBox.max.x - EnemyNickGeometry.boundingBox.min.x), 0, 0 );
+            this.EnemyNickMesh = new THREE.Mesh(EnemyNickGeometry, new THREE.MeshBasicMaterial({color:0xFF0000}));
             this.scene.add(this.EnemyNickMesh);
             this.EnemyNickMesh.position.set(-30,  30,  10);
             this.EnemyNickMesh.lookAt(this.camera.position);
@@ -74,14 +65,13 @@ export default class Game{
     }
 
     onWindowResize () {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.aspect = (window.innerWidth/1.77) / (window.innerHeight/1.77);
         this.camera.updateProjectionMatrix();
-
         this.renderer.setSize( window.innerWidth, window.innerHeight );
-
     }
+
     removeGame(ref){
-      ref= null;
+      ref = null;
       document.getElementById('accInfo').style.display = "block";
       SocketClientWorker.socket.emit("getAccData");
     }
@@ -93,16 +83,14 @@ export default class Game{
         this.raycaster.setFromCamera( this.mouse, this.camera );
         var intersects = this.raycaster.intersectObjects( this.scene.children );     
     }
+
     updateRound(state){
-      if(this.roundMesh){
-        this.scene.remove(this.roundMesh);
-      }
-      if(this.roundLine){
-        this.scene.remove(this.roundLine);
-      }
-      let roundText;
-      if(state == 1){
-        roundText = new THREE.TextBufferGeometry( "Ваш ход", 
+      if(this.RoundTurnMeshText) this.scene.remove(this.RoundTurnMeshText);
+      if(this.roundLine) this.scene.remove(this.roundLine);
+      let RoundInfo = {RoundTurnMessage:"Ход противника",MessageColor:0xff0000};
+      if(state == 1) RoundInfo = {RoundTurnMessage:"Ваш ход",MessageColor:new THREE0xffffff};
+      this.endRoundButton.visible = !state;
+      let RoundGeometryText = new THREE.TextBufferGeometry( RoundInfo.RoundTurnMessage, 
           {
               font: this.font,
               size: 2,
@@ -110,43 +98,30 @@ export default class Game{
               curveSegments: 12,
               bevelEnabled: false,
           });
-          this.endRoundButton.visible = true; 
-          this.roundLine = new THREE.Mesh(new THREE.BoxBufferGeometry(0.5,0.5,50),new THREE.MeshBasicMaterial());
-      }else{
-        roundText = new THREE.TextBufferGeometry( "Ход противника", 
-        {
-            font: this.font,
-            size: 2,
-            height: 0,
-            curveSegments: 12,
-            bevelEnabled: false,
-        }); 
-        this.endRoundButton.visible = false;
-        this.roundLine = new THREE.Mesh(new THREE.BoxBufferGeometry(0.5,0.5,50),new THREE.MeshBasicMaterial({color:0xFF0000}));
-      }
+      this.endRoundButton.visible = true; 
+      this.roundLine = new THREE.Mesh(new THREE.BoxBufferGeometry(0.5,0.5,50),new THREE.MeshBasicMaterial(RoundInfo.MessageColor));
       this.scene.add(this.roundLine);
       this.roundLine.position.set(-15,  20,  26);
       
       TweenMax.to(this.roundLine.scale,60,{z:0.001,onComplete:()=>{
 
       }});
-      roundText.computeBoundingBox(); 
-      roundText.translate( - 0.5 * ( roundText.boundingBox.max.x - roundText.boundingBox.min.x), 0, 0 );
-      this.roundMesh = new THREE.Mesh(roundText,new THREE.MeshBasicMaterial({color:0xFF0000,transparent:true,opacity:1}));
-      this.scene.add(this.roundMesh);
-      this.roundMesh.position.set(-10,  20,  26);
-      this.roundMesh.lookAt(this.camera.position);
-      TweenMax.to(this.roundMesh.scale,2,{x:2,y:2,z:2});
-      TweenMax.to(this.roundMesh.material,2,{opacity:0,onComplete:()=>{
-        this.scene.remove(this.roundMesh);
+      RoundGeometryText.computeBoundingBox(); 
+      RoundGeometryText.translate( - 0.5 * ( RoundGeometryText.boundingBox.max.x - RoundGeometryText.boundingBox.min.x), 0, 0 );
+      this.RoundTurnMeshText = new THREE.Mesh(RoundGeometryText,new THREE.MeshBasicMaterial({color:RoundInfo.MessageColor,transparent:true,opacity:1}));
+      this.scene.add(this.RoundTurnMeshText);
+      this.RoundTurnMeshText.position.set(-10,  20,  26);
+      this.RoundTurnMeshText.lookAt(this.camera.position);
+      TweenMax.to(this.RoundTurnMeshText.scale,2,{x:2,y:2,z:2});
+      TweenMax.to(this.RoundTurnMeshText.material,2,{opacity:0,onComplete:()=>{
+        this.scene.remove(this.RoundTurnMeshText);
       }})
     }
+
     updateGold(count){
-      if(this.goldMesh){
-        this.scene.remove(this.goldMesh);
-      }
+      if(this.GoldCountMesh) this.scene.remove(this.GoldCountMesh);
       this.goldCount = count;
-      let textGeometry = new THREE.TextBufferGeometry( `${this.goldCount}`, 
+      let GoldCountGeometryText = new THREE.TextBufferGeometry( this.goldCount+'', 
           {
               font: this.font,
               size: 1,
@@ -155,20 +130,16 @@ export default class Game{
               bevelEnabled: false,
           } 
       );
-      textGeometry.computeBoundingBox(); 
-      textGeometry.translate( - 0.5 * ( textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x), 0, 0 );
+      GoldCountGeometryText.computeBoundingBox(); 
+      GoldCountGeometryText.translate( - 0.5 * ( GoldCountGeometryText.boundingBox.max.x - GoldCountGeometryText.boundingBox.min.x), 0, 0 );
   
-      this.goldMesh = new THREE.Mesh(textGeometry,new THREE.MeshBasicMaterial({color:0xFFD700})); 
-      this.scene.add(this.goldMesh);
-      this.goldMesh.position.set(8.5,21,2.5);
-      this.goldMesh.rotation.set(Math.PI,Math.PI/2,Math.PI);
-      // this.goldMesh.lookAt(a.camera.position);
+      this.GoldCountMesh = new THREE.Mesh(GoldCountGeometryText, new THREE.MeshBasicMaterial({color:0xFFD700})); 
+      this.scene.add(this.GoldCountMesh);
+      this.GoldCountMesh.position.set(8.5,21,2.5);
+      this.GoldCountMesh.rotation.set(Math.PI,Math.PI/2,Math.PI);
+      // this.GoldCountMesh.lookAt(a.camera.position);
     }
 
-
-    mouseHandle(event){
-      
-    }
     onMouseMove ( event ) {
       this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
       this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;

@@ -1,12 +1,10 @@
 const  express = require('express')
-const path = require('path');
 let router = express.Router();
 const argon2 = require('argon2');
-var pool = require('../app.js');
+var pool = require('../app.js').pool;
 router.route('/reg')
 .get(function(request, response) {
-	console.log(path.dirname(__dirname) + '/public/register.html');
-	response.sendFile(path.dirname(__dirname) + '/public/register.html');
+	response.render('register');
 })
 .post(function(request, response) {
 	registerUser(request,response);
@@ -40,7 +38,7 @@ function registerUser(request,response){
 					return;
 				} else {
 						argon2.hash(request.body.password).then(hash =>{
-							pool.query(`INSERT INTO accounts (username, password, email, gold,rank_points,matches, matches_win) VALUES ('${nickname}', '${hash}', '${mail}', '0','0','0','0');`,(err,results)=>{
+							pool.query(`INSERT INTO accounts (username, password, email, gold,rank_points, rank, matches, matches_win) VALUES ('${nickname}', '${hash}', '${mail}', '0','0','1','0','0');`,(err,results)=>{
 								pool.query(`select id from accounts where email = '${mail}'`,(err,res)=>{
 									let userid = res[0].id;
 									//console.log(`user: ${userid}`);
@@ -59,9 +57,9 @@ function registerUser(request,response){
 										pool.query(queryStringInsertCards,
 											(err,result)=>{
 												request.session.loggedin = true;
-												request.session.mail = mail;
-												request.session.nickname = nickname;
-												request.session.gold = 0;
+												// request.session.mail = mail;
+												// request.session.nickname = nickname;
+												// request.session.gold = 0;
 												request.session.playerId = userid;
 												console.log("register success");
 												response.redirect('/home');

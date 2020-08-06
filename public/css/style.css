@@ -37,6 +37,11 @@ body{
     background: url("../images/floating-castle-ragnarok-online-anime-games-clouds-scenic-valley\ 1.png") no-repeat;
     background-size: cover;
     padding-top: 1%;
+    height: 100%;
+    width: 100%;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    overflow: hidden;
 }
 .wrapper{
     max-width: 400px;
@@ -113,5 +118,58 @@ body{
     }
     .wrapper .form .inputfield label{
       margin-bottom: 5px;
+    }
+  }
+
+  .s3{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: auto;
+    margin-top: 6vh;
+    background: #fec107;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    transition: all 0.2s;
+    -webkit-animation: r5 2s 0s ease-out infinite;
+    -moz-animation: r5 2s 0s ease-out infinite;
+    animation: r5 2s 0s ease-out infinite;
+  }
+
+  
+  @-webkit-keyframes r5 {
+    0% {
+      box-shadow: 0 0 8px 6px rgb(255, 255, 255), 0 0 0px 0px transparent, 0 0 0px 0px rgb(235, 194, 15);
+    }
+    10% {
+      box-shadow: 0 0 8px 6px rgb(213, 231, 44), 0 0 12px 10px transparent, 0 0 12px 14px rgb(235, 194, 15);
+    }
+    100% {
+      box-shadow: 0 0 8px 6px rgba(202, 245, 11, 0), 0 0 0px 40px transparent, 0 0 0px 40px rgba(26, 140, 255, 0);
+    }
+  }
+  @-moz-keyframes r5 {
+    0% {
+      box-shadow: 0 0 8px 6px rgb(255, 255, 255), 0 0 0px 0px transparent, 0 0 0px 0px rgb(235, 194, 15);
+    }
+    10% {
+      box-shadow: 0 0 8px 6px rgb(213, 231, 44), 0 0 12px 10px transparent, 0 0 12px 14px rgb(235, 194, 15);
+    }
+    100% {
+      box-shadow: 0 0 8px 6px rgba(202, 245, 11, 0), 0 0 0px 40px transparent, 0 0 0px 40px rgba(26, 140, 255, 0);
+    }
+  }
+  @keyframes r5 {
+    0% {
+      transform: scale(0.9,0.9);
+      box-shadow: 0 0 8px 6px rgb(255, 255, 255), 0 0 0px 0px transparent, 0 0 0px 0px rgb(235, 194, 15);
+    }
+    10% {
+      transform: scale(0.2,0.2);
+      box-shadow: 0 0 8px 6px rgb(213, 231, 44), 0 0 12px 10px transparent, 0 0 12px 14px rgb(235, 194, 15);
+    }
+    100% {
+      transform: scale(1,1);
+      box-shadow: 0 0 8px 6px rgba(202, 245, 11, 0), 0 0 0px 40px transparent, 0 0 0px 40px rgba(26, 140, 255, 0);
     }
   }

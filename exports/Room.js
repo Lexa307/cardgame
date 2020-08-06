@@ -3,14 +3,17 @@ function bind(func, context) {
 	  return func.apply(context, arguments);
 	};
 }
+const pool = require('../app.js').pool;
+const io = require('../app.js').io;
 class Room{
-    constructor(io,pool,roomName,socket1,socket2){
-        this.pool = pool;
-        this.io = io;
+    constructor(roomName,users){
         this.roomName = roomName;
-        this.socket1 = socket1;
+        this.users = users;
         this.socket2 = socket2;
 
+        io.on('connection', (socket)=>{
+            this.users.find(user =>{ return (user.request.session.playerId == socket.request.session.playerId)}).request.session.InGame = this.roomName;
+        })
         this.gold1 = this.gold2 = 10;
         this.timer = null; 
 
@@ -34,11 +37,11 @@ class Room{
     }
     loadRes(){
         //отправка ресурсов карт
-        this.pool.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.socket1.userId} and pos is not null)`,
+        pool.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.socket1.userId} and pos is not null)`,
         (err,result1)=>{
             this.colodCards1 = [...result1];
             console.log(this.colodCards1);
-            this.pool.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.socket2.userId} and pos is not null)`,
+            pool.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.socket2.userId} and pos is not null)`,
             (err,result2)=>{
                 this.colodCards2 = [...result2];
                 this.io.to(this.socket1.id).emit("cardResLoad",[result1,result2]);
@@ -135,11 +138,11 @@ class Room{
         for(let i = 0; i< tmpsockets.length; i++){
             this.pool.query(`UPDATE accounts set matches = matches +1 where id = ${tmpsockets[i].userId}`);
         }    
-        this.pool.query(`UPDATE accounts set matches_win = matches_win +1 where id = ${(socket.id == this.socket1.id)?this.socket2.userId:this.socket1.userId}`);
-        this.pool.query(`UPDATE accounts set rank_points = rank_points +1 where id = ${(socket.id == this.socket1.id)?this.socket2.userId:this.socket1.userId}`);
+        pool.query(`UPDATE accounts set matches_win = matches_win +1 where id = ${(socket.id == this.socket1.id)?this.socket2.userId:this.socket1.userId}`);
+        pool.query(`UPDATE accounts set rank_points = rank_points +1 where id = ${(socket.id == this.socket1.id)?this.socket2.userId:this.socket1.userId}`);
 
         this.io.to(this.roomName).emit('closeGame');
-        this.pool.query(`SELECT rank_points from accounts where id = ${socket.userId}`,(err,res)=>{
+        pool.query(`SELECT rank_points from accounts where id = ${socket.userId}`,(err,res)=>{
             if(res[0].rank_points > 0){
                 this.pool.query(`UPDATE accounts set rank_points = rank_points -1 where id = ${socket.userId}`);
             }
@@ -153,24 +156,24 @@ class Room{
         this.socket1.inGame = this.socket2.inGame = false;
     }
     updateRanks(socket){
-        this.pool.query(`SELECT rank,rank_points from accounts where id = ${socket.userId}`,(err,res)=>{
+        pool.query(`SELECT rank,rank_points from accounts where id = ${socket.userId}`,(err,res)=>{
             
             if(res[0].rank != null){
-                this.pool.query(`SELECT * from ranks where condition = (select max(condition) from ranks where condition <= ${res[0].rank_points});`,(error,result)=>{
+                pool.query(`SELECT * from ranks where condition = (select max(condition) from ranks where condition <= ${res[0].rank_points});`,(error,result)=>{
                     // console.log(result);
                     if(result != undefined){
                         if(res[0].rank!=result[0].rank_id){
-                            this.pool.query(`UPDATE accounts set rank = ${result[0].rank_id} where id = ${socket.userId}`);
+                            pool.query(`UPDATE accounts set rank = ${result[0].rank_id} where id = ${socket.userId}`);
                         }
                     }else{
-                        this.pool.query(`UPDATE accounts set rank = ${null} where id = ${socket.userId}`);
+                        pool.query(`UPDATE accounts set rank = ${null} where id = ${socket.userId}`);
                     }
                 });
             }else{
-                this.pool.query(`SELECT * from ranks where rank_id = 1`,(error,result)=>{
+                pool.query(`SELECT * from ranks where rank_id = 1`,(error,result)=>{
                     // console.log(result);
                     if(res[0].rank_points >= result[0].condition){
-                        this.pool.query(`UPDATE accounts set rank = ${result[0].rank_id} where id = ${socket.userId}`);
+                        pool.query(`UPDATE accounts set rank = ${result[0].rank_id} where id = ${socket.userId}`);
                     }
                 })
             }
