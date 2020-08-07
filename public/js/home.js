@@ -1,18 +1,19 @@
 import SocketClientWorker from './modules/socket.js';
-import Game from './modules/game.js';
+
 let a = null;
 document.getElementById("SearhButton").addEventListener('click',findGame,false);
 document.getElementById("cancel").addEventListener('click',canselSearch,false);
 document.getElementById("exit").addEventListener('click',exitFromSystem,false);
 SocketClientWorker.socket.emit("getAccData");
 
-SocketClientWorker.socket.on("cardResLoad",(msg)=>{
-  setTimeout(()=>{a = new Game(msg,a);},1000)
-});
+// SocketClientWorker.socket.on("cardResLoad",(msg)=>{
+//   setTimeout(()=>{a = new Game(msg,a);},1000)
+// });
 SocketClientWorker.socket.on("gameFounded",(msg)=>{
+  console.log(msg);
   document.getElementById('cancel_field').style.visibility = "hidden";
   document.getElementById('search_status_text').innerText = `Игра найдена!\nЗапуск матча...`
-  window.location.href('/game/'+msg);
+  window.location.href = '/game/'+msg;
 });
 SocketClientWorker.socket.on("accData",(msg)=>{
   document.getElementById('accInfo').innerText = 

@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const mysql = require('mysql');
-const { v4: uuidV4 } = require('uuid')
 require('dotenv').config();
 
 app.set('view engine', 'ejs');

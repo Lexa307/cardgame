@@ -59,7 +59,6 @@ function registerUser(request,response){
 												request.session.loggedin = true;
 												// request.session.mail = mail;
 												// request.session.nickname = nickname;
-												// request.session.gold = 0;
 												request.session.playerId = userid;
 												console.log("register success");
 												response.redirect('/home');

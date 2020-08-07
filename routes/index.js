@@ -7,7 +7,7 @@ router.use(function(req,res,next){
 });
 router.use(require('./auth.js'));
 router.use(require('./reg.js'));
-router.use(require('./home.js'));
+router.use(require('./home.js').router);
 router.use(require('./game.js'));
 
 module.exports = router;

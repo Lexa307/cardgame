@@ -1,1 +1,23 @@
-<div>хуй</div>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="css/style.css">
+        <title>Game</title>
+        <style>
+            .status{
+                margin: auto;
+                text-align: center;
+            }
+        </style>
+        <script>const GAME_ID = "<%= gameID %>"</script>
+	</head>
+    <body>
+        <div class="status">Awaiting players</div>        
+        <script src="js/lib/socket.io.js"></script>
+        <script src="js/lib/TweenMax.min.js"></script>
+        <script type="module" src="js/game.js"></script>
+	</body>
+</html>

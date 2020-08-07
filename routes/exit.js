@@ -3,7 +3,7 @@ const router = express.Router();
 router.route('/exit')
 .post((req,res)=>{
 req.session.destroy(() => {
-    res.clearCookie('session_cookie_name', {path: '/home'});
+    res.clearCookie('session_cookie_name', {path: '/'});
     res.redirect('/');
     });
 });

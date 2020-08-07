@@ -8,12 +8,11 @@ const io = require('../app.js').io;
 class Room{
     constructor(roomName,users){
         this.roomName = roomName;
-        this.users = users;
-        this.socket2 = socket2;
-
-        io.on('connection', (socket)=>{
-            this.users.find(user =>{ return (user.request.session.playerId == socket.request.session.playerId)}).request.session.InGame = this.roomName;
-        })
+        this.AwaitingUsersIDs = [];
+        for(let i of users){
+            this.AwaitingUsersIDs.push(i.userId);
+        }    
+        this.userSockets = [];
         this.gold1 = this.gold2 = 10;
         this.timer = null; 
 
@@ -27,25 +26,33 @@ class Room{
         this.fieldCards1 = [];
         this.fieldCards2 = [];
         this.round = 0;
+        io.on('connection',(socket)=>{
+            socket.on('ConnectToGame',(msg)=>{
+                if(!(msg == this.roomName)) return;
+                if(!(AwaitingUsersIDs.find((userId)=>{return (userId == socket.userId)}))) return; //think it can be removed
+                if(userSockets.find((userId)=>{return (userId == socket.userId)})) return; //user already connected and him socket grabed in usersockets array
+                userSockets.push(socket);
+                this.io.to(this.roomName).emit('PlayerReadyToStart');
+            })
+        })
+        // this.users[0].join(roomName);
+        // this.users[1].join(roomName);
 
-        this.socket1.join(roomName);
-        this.socket2.join(roomName);
-
-        this.socket1.inGame = this.socket2.inGame = true;
-        this.socket1.searching = this.socket2.searching = false;
-        this.loadRes();
+        // this.users[0].inGame = this.users[1].inGame = true;
+        // this.users[0].searching = this.users[1].searching = false;
+        //this.loadRes();
     }
     loadRes(){
         //отправка ресурсов карт
-        pool.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.socket1.userId} and pos is not null)`,
+        pool.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.users[0].userId} and pos is not null)`,
         (err,result1)=>{
             this.colodCards1 = [...result1];
             console.log(this.colodCards1);
-            pool.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.socket2.userId} and pos is not null)`,
+            pool.query(`select * from card where card_id in (select card_id from deck where user_id = ${this.users[1].userId} and pos is not null)`,
             (err,result2)=>{
                 this.colodCards2 = [...result2];
-                this.io.to(this.socket1.id).emit("cardResLoad",[result1,result2]);
-                this.io.to(this.socket2.id).emit("cardResLoad",[result2,result1]);
+                this.io.to(this.users[0].id).emit("cardResLoad",[result1,result2]);
+                this.io.to(this.users[1].id).emit("cardResLoad",[result2,result1]);
 
                 
                 
@@ -55,18 +62,18 @@ class Room{
     }
     readyAwait(){
         let readyFlag = 0;
-        this.socket1.on('loadingReady',()=>{
+        this.users[0].on('loadingReady',()=>{
             readyFlag++;
         })
-        this.socket2.on('loadingReady',()=>{
+        this.users[1].on('loadingReady',()=>{
             readyFlag++;
         })
         this.timer = setInterval(() => {
             if(readyFlag >= 2){
                 console.log("loading ready");
                 clearInterval(this.timer);
-                this.io.to(this.socket1.id).emit("sendEnemy",this.socket2.request.session.nickname);
-                this.io.to(this.socket2.id).emit("sendEnemy",this.socket1.request.session.nickname);
+                this.io.to(this.users[0].id).emit("sendEnemy",this.users[1].request.session.nickname);
+                this.io.to(this.users[1].id).emit("sendEnemy",this.users[0].request.session.nickname);
                 this.chooseAwait();
             }
         }, 500);
@@ -74,11 +81,11 @@ class Room{
     chooseAwait(){
         this.io.to(this.roomName).emit("ChooseCard");
         let readyFlag = 0;
-        this.socket1.on('ChoosenCards',(msg)=>{
+        this.users[0].on('ChoosenCards',(msg)=>{
             this.sleeveCards1 = [...msg];
             readyFlag++;
         })
-        this.socket2.on('ChoosenCards',(msg)=>{
+        this.users[1].on('ChoosenCards',(msg)=>{
             this.sleeveCards2 = [...msg];
             readyFlag++;
         })
@@ -92,16 +99,16 @@ class Room{
     }
     roundChecker(){
         if(this.round == 1){
-            this.changeRound(this.socket2);
+            this.changeRound(this.users[1]);
         }else{
-            this.changeRound(this.socket1);
+            this.changeRound(this.users[0]);
         }
     }
     endRound(socket){
-        if(socket.id == this.socket1.id){
-            this.changeRound(this.socket2);
+        if(socket.id == this.users[0].id){
+            this.changeRound(this.users[1]);
         }else{
-            this.changeRound(this.socket1);
+            this.changeRound(this.users[0]);
         }
         clearInterval(this.timer);
         this.timer = setInterval(bind(()=>{this.roundChecker()},this),60000);
@@ -109,23 +116,23 @@ class Room{
 
     startGame(){
         this.updateGold();
-        let players = [this.socket1,this.socket2];
+        let players = [this.users[0],this.users[1]];
         let player1 = players.splice(Math.round(0+Math.random()*(1 - 0)),1);//first player who starts round
         this.changeRound(player1);
         this.timer = setInterval(bind(()=>{this.roundChecker()},this),60000);
     }
     updateGold(){
-        this.io.to(this.socket1.id).emit("updateGold",this.gold1);
-        this.io.to(this.socket2.id).emit("updateGold",this.gold2);
+        this.io.to(this.users[0].id).emit("updateGold",this.gold1);
+        this.io.to(this.users[1].id).emit("updateGold",this.gold2);
     }
     changeRound(socket){
-        if(socket.id == this.socket1.id){
-            this.io.to(this.socket1.id).emit("round",1);
-            this.io.to(this.socket2.id).emit("round",0);
+        if(socket.id == this.users[0].id){
+            this.io.to(this.users[0].id).emit("round",1);
+            this.io.to(this.users[1].id).emit("round",0);
             this.round = 1;
         }else{
-            this.io.to(this.socket1.id).emit("round",0);
-            this.io.to(this.socket2.id).emit("round",1);
+            this.io.to(this.users[0].id).emit("round",0);
+            this.io.to(this.users[1].id).emit("round",1);
             this.round = 2;
         }
         this.gold1+=2;
@@ -134,12 +141,12 @@ class Room{
     }//who play as argument
 
     endGame(socket){//send looser
-        let tmpsockets = [this.socket1,this.socket2];
+        let tmpsockets = [this.users[0],this.users[1]];
         for(let i = 0; i< tmpsockets.length; i++){
             this.pool.query(`UPDATE accounts set matches = matches +1 where id = ${tmpsockets[i].userId}`);
         }    
-        pool.query(`UPDATE accounts set matches_win = matches_win +1 where id = ${(socket.id == this.socket1.id)?this.socket2.userId:this.socket1.userId}`);
-        pool.query(`UPDATE accounts set rank_points = rank_points +1 where id = ${(socket.id == this.socket1.id)?this.socket2.userId:this.socket1.userId}`);
+        pool.query(`UPDATE accounts set matches_win = matches_win +1 where id = ${(socket.id == this.users[0].id)?this.users[1].userId:this.users[0].userId}`);
+        pool.query(`UPDATE accounts set rank_points = rank_points +1 where id = ${(socket.id == this.users[0].id)?this.users[1].userId:this.users[0].userId}`);
 
         this.io.to(this.roomName).emit('closeGame');
         pool.query(`SELECT rank_points from accounts where id = ${socket.userId}`,(err,res)=>{
@@ -147,13 +154,13 @@ class Room{
                 this.pool.query(`UPDATE accounts set rank_points = rank_points -1 where id = ${socket.userId}`);
             }
         })
-        this.updateRanks(this.socket1);
-        this.updateRanks(this.socket2);
+        this.updateRanks(this.users[0]);
+        this.updateRanks(this.users[1]);
 
-        this.socket1.leave(this.roomName);
-        this.socket2.leave(this.roomName);
+        this.users[0].leave(this.roomName);
+        this.users[1].leave(this.roomName);
         
-        this.socket1.inGame = this.socket2.inGame = false;
+        this.users[0].inGame = this.users[1].inGame = false;
     }
     updateRanks(socket){
         pool.query(`SELECT rank,rank_points from accounts where id = ${socket.userId}`,(err,res)=>{
