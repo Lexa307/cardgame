@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const mysql = require('mysql');
 require('dotenv').config();
-
+app.use(express.static('./public/'));
 app.set('view engine', 'ejs');
 
 var options = {
@@ -53,7 +53,7 @@ module.exports = {pool:pool,io:io};
 app.use(sessionMiddleware);
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
-app.use(express.static('./public/'));
+
 app.use(express.json());
 app.use(require('./routes/index.js'));
 app.get('/', function(request, response) {

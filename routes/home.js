@@ -7,7 +7,7 @@ const {pool,io} = require('../app.js');
 const router = express.Router();
 router.route('/status')//DETELE AFTER TESTING
 .get((req,res)=>{//
-    res.render(testJSON(rooms));//
+    res.json(testJSON(rooms));//
 })//
 router.route('/home') 
 .get((request, response) => {
@@ -51,6 +51,7 @@ router.route('/home')
             
     }
 });
+
 function cancelSearching(socket){
     let pos = -1;
     for(let i = 0 ; i < searching.length; i++){
@@ -63,25 +64,9 @@ function cancelSearching(socket){
     socket.searching = false;
 }
 
-function endGame(socket){
-	if(socket.inGame){
-
-		for(let i = 0; i < rooms.length; i++){
-			if(rooms[i].roomName == Object.keys(socket.adapter.rooms)[1]){
-				rooms[i].endGame(socket);
-				console.log(rooms.length);
-				rooms.splice(i,1);
-				console.log(rooms.length);
-			}
-		}
-	}
-}
-
-
-
 function AddUserToSearchQueue(socket){
-    //TODO: add chech in sessions about playing in Game also for enother socket
     if(!socket.request.session.loggedin) return; //chech user if he not in system
+    if(rooms.find(room =>{return room.AwaitingUsersIDs.find(userID => {return (userID == socket.userId)})})) return;
     if(searching.find(user => {return (user.request.session.playerId == socket.request.session.playerId)})) return; //check user if he already in queue
     searching.push(socket);
     if(searching.length >= 2) StartGameSequrnce( searching.splice(0,2) );

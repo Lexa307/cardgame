@@ -13,6 +13,13 @@ class Room{
             this.AwaitingUsersIDs.push(i.userId);
         }    
         this.userSockets = [];
+        this.stages = {
+            "AwaitingPlayersToStart":true,
+            "AwaitingPlayersLoadRes":false,
+            "AwaitingPlayersPickSleeve":false,
+            "PlayersFighting":false,
+            "EndGame":false,
+        }
         this.gold1 = this.gold2 = 10;
         this.timer = null; 
 
@@ -26,15 +33,6 @@ class Room{
         this.fieldCards1 = [];
         this.fieldCards2 = [];
         this.round = 0;
-        io.on('connection',(socket)=>{
-            socket.on('ConnectToGame',(msg)=>{
-                if(!(msg == this.roomName)) return;
-                if(!(AwaitingUsersIDs.find((userId)=>{return (userId == socket.userId)}))) return; //think it can be removed
-                if(userSockets.find((userId)=>{return (userId == socket.userId)})) return; //user already connected and him socket grabed in usersockets array
-                userSockets.push(socket);
-                this.io.to(this.roomName).emit('PlayerReadyToStart');
-            })
-        })
         // this.users[0].join(roomName);
         // this.users[1].join(roomName);
 

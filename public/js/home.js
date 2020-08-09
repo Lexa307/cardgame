@@ -13,7 +13,8 @@ SocketClientWorker.socket.on("gameFounded",(msg)=>{
   console.log(msg);
   document.getElementById('cancel_field').style.visibility = "hidden";
   document.getElementById('search_status_text').innerText = `Игра найдена!\nЗапуск матча...`
-  window.location.href = '/game/'+msg;
+  window.location.href = `/${msg}`;
+  
 });
 SocketClientWorker.socket.on("accData",(msg)=>{
   document.getElementById('accInfo').innerText = 
