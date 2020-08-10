@@ -1,13 +1,16 @@
 import SocketClientWorker from './modules/socket.js';
 import Game from './modules/game.js';
-SocketClientWorker.socket.emit('ConnectToGame',GAME_ID);
+SocketClientWorker.socket.emit('ConnectToGame',GAME_ID,USER_ID);
 SocketClientWorker.socket.on('PlayerReadyToStart',(playerName)=>{
-    document.getElementById("status").childNodes.forEach(i => {i.remove()} );
+    let StatusNode = document.getElementById("status");
+    while (StatusNode.firstChild) {
+        StatusNode.removeChild(StatusNode.lastChild);
+      }
     for(let i of playerName){
         let ConnectedPlayerElement = document.createElement('div');
         ConnectedPlayerElement.innerText = i;
         ConnectedPlayerElement.className = 'player';
-        document.getElementById("status").appendChild(ConnectedPlayerElement);
+        StatusNode.appendChild(ConnectedPlayerElement);
     }
 })
 // let a = new Game(msg,a);

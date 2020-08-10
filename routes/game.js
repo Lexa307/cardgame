@@ -8,27 +8,21 @@ router.route('/:game')
 .get((req,res)=>{
 let game = rooms.find((room)=>{return (room.roomName == req.params.game)}); //get room if it exists
     if((game) && (game.AwaitingUsersIDs.find((userId)=>{return (userId == req.session.playerId)})))
-        res.render('game',{ gameID: req.params.game });
+        res.render('game',{ gameID: req.params.game,userID: req.session.playerId });
     else
        res.render('404');
 });
 io.on("connection",(socket)=>{
     socket.userId = socket.request.session.playerId;
-    socket.on('ConnectToGame',(msg)=>{
-        ConnectToGame(socket,msg);        
-       // console.log(socket.id + "connects to "+msg);
+    socket.on('ConnectToGame',(GAME_ID,USER_ID)=>{
+        ConnectToGame(socket,GAME_ID);        
+        socket.on('disconnect',() =>{
+            let game = rooms.find((room)=>{return (room.roomName == GAME_ID) }); 
+            if(!game) return;
+            game.userSockets = game.userSockets.filter((player)=>{return (player.userId!=USER_ID)}); //remove old socket
+        });
     });
-    socket.on('disconnecting',socket =>{
-        // console.time('find');
-        let game = rooms.find((room)=>{return (room.userSockets.find((user)=>{return (user.userId == socket.userId)}))}); 
-        // console.timeLog('find');
-        // console.log(Object.keys(socket.rooms))
-        if(!game) return;
-        console.log(game.userSockets);
-        game.userSockets = game.userSockets.filter((player)=>{return (player.userId!=socket.userId)});
-        // console.timeLog('find');
-        // console.timeEnd('find');
-    })
+
 });
 
 function ConnectToGame(socket,gameID){
@@ -46,7 +40,6 @@ function ConnectToGame(socket,gameID){
         for(let i of game.userSockets){
             PlayersReady.push(i.username);
         }
-        console.table(PlayersReady);
         io.to(game.roomName).emit('PlayerReadyToStart',PlayersReady);
     })
 }

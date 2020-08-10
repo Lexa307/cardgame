@@ -22,7 +22,7 @@ router.route('/home')
             
             socket.on("getAccData",()=>{
                 pool.query(`SELECT username,gold,matches_win,matches,(select rank_name from ranks where rank_id = rank) as rank_name from accounts where id = ${socket.userId} ;`,(err,res)=>{
-                    if(!res[0]) return;
+                    if(!res) return;
                     io.to(socket.id).emit("accData",
                     {
                         nickname:res[0].username,
