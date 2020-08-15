@@ -1,7 +1,18 @@
 const  express = require('express')
 let router = express.Router();
-const argon2 = require('argon2');
+//const argon2 = require('argon2');//
+const bcrypt = require('bcrypt');
+const saltRounds = process.env.SALTROUNDS;
 var pool = require('../app.js').pool;
+const hash = async (text, size) => {
+    try {
+        const salt = await bcrypt.genSalt(parseInt(size,10));
+        const hash = await bcrypt.hash(text, salt);
+        return hash
+    } catch(error) {
+        console.log(error)
+    }
+}
 router.route('/reg')
 .get(function(request, response) {
 	response.render('register');
@@ -37,7 +48,7 @@ function registerUser(request,response){
 					response.end();
 					return;
 				} else {
-						argon2.hash(request.body.password).then(hash =>{
+						hash(request.body.password, saltRounds).then(hash =>{
 							pool.query(`INSERT INTO accounts (username, password, email, gold,rank_points, rank, matches, matches_win) VALUES ('${nickname}', '${hash}', '${mail}', '0','0','1','0','0');`,(err,results)=>{
 								pool.query(`select id from accounts where email = '${mail}'`,(err,res)=>{
 									let userid = res[0].id;

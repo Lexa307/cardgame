@@ -1,5 +1,6 @@
 const  express = require('express')
-const argon2 = require('argon2');
+//const argon2 = require('argon2');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 const pool = require('../app.js').pool;
 router.route('/auth')
@@ -29,8 +30,8 @@ function authUser(request,response){
 
 			pool.query(`SELECT * FROM accounts WHERE email = '${mail}';` , (err,results)=> {
 				if (results.length > 0) {
-					try {
-						argon2.verify(results[0].password, password).then(answer =>{
+					try { 
+						bcrypt.compare(password, results[0].password).then(answer =>{
 							if(answer){
 								
 								request.session.loggedin = true;

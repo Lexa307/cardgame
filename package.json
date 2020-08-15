@@ -10,7 +10,7 @@
   "author": "Lexa307",
   "license": "ISC",
   "dependencies": {
-    "argon2": "^0.25.1",
+    "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.4",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.3",
