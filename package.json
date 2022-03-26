@@ -19,7 +19,7 @@
     "express-router": "0.0.1",
     "express-session": "^1.17.0",
     "jshint": "^2.11.0",
-    "minimist": ">=0.2.1",
+    "minimist": ">=1.2.6",
     "mysql2": "^2.1.0",
     "node-pre-gyp": "^0.14.0",
     "socket.io": "^2.4.0",
